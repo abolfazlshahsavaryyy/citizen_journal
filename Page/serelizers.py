@@ -50,3 +50,18 @@ class PageSerializer(serializers.ModelSerializer):
             'news_posts',  # shows related news
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+class PageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = ['name', 'page_description']
+
+    def create(self, validated_data):
+        # Add default values here before saving
+        validated_data['post_count'] = 0
+        validated_data['follower_count'] = 0
+        validated_data['following_count'] = 0
+        # Now create the instance with those values
+        return Page.objects.create(**validated_data)
+
+    
