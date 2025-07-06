@@ -72,17 +72,30 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+import os
+
+from django.core.exceptions import ImproperlyConfigured
+
+def get_env_var(var_name):
+    """Raise an error if environment variable is missing"""
+    value = os.getenv(var_name)
+    if value is None:
+        raise ImproperlyConfigured(f"Missing required environment variable: {var_name}")
+    return value
+
+import os
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
-        'USER': 'myuser',
-        'PASSWORD': 'mypassword',
+        'NAME': os.getenv('POSTGRES_DB', 'mydb'),
+        'USER': os.getenv('POSTGRES_USER', 'myuser'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'mypassword'),
         'HOST': '127.0.0.1',
         'PORT': '5433',
     }
 }
+
 
 
 
