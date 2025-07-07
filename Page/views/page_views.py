@@ -48,8 +48,24 @@ class PageDetailView(APIView):
         except:
             page_serializer=PageDetailseSerializer(page)
             return Response(data=page_serializer.errors,status=status.HTTP_404_NOT_FOUND)
+    def put(self, request, pk):
+        try:
+            post = self._get_page_by_pk(pk)
+            serializer = PostUpdateSerializer(post, data=request.data)
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': 'Request not in correct format', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-    def put(self,request,pk):
-        #complete the put and delete 
-        pass
 
+    def delete(self,request,pk):
+        try:
+            post=self._get_page_by_pk(pk)
+            post.delete()
+            return Response({'detail': 'Post deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response({'error':'not found'},status=status.HTTP_404_NOT_FOUND)

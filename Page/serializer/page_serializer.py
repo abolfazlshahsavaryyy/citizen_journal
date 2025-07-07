@@ -79,4 +79,10 @@ class PageDetailseSerializer(serializers.ModelSerializer):
     class Meta:
         model=Page
         fields='__all__'
+
+class PostUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Page
+        fields=['name','page_description']
+        
     
