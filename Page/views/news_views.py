@@ -5,7 +5,7 @@ from rest_framework import status
 from Page.models import News
 from Page.serializer.news_serializer import NewsCreateSerializer, NewsReadSerializer
 from django.shortcuts import get_object_or_404
-
+from Page.models import Page
 
 class NewsListCreateView(APIView):
     def get(self, request):
@@ -41,6 +41,19 @@ class NewsDetailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        news = self.get_object(pk)
-        news.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            news = self.get_object(pk)  # assumes you're in a DRF ViewSet or APIView
+
+            page = news.page  # ✅ Proper way to access the related page
+
+            if page.post_count > 0:
+                page.post_count -= 1
+                page.save()
+
+            news.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        except News.DoesNotExist:
+            return Response({"error": "News post not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
