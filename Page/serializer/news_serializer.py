@@ -29,6 +29,6 @@ class NewsReadSerializer(serializers.ModelSerializer):
         model = News
         fields = [
             'id', 'title', 'text',
-            'like_count', 'page', 'page_name','page_follower',
+            'like_count','comment_count', 'page', 'page_name','page_follower',
             'published_date', 'updated_at'
         ]
