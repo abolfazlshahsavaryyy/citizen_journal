@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'Page',
     'rest_framework',
     'Comment',
-    'Discussion'
+    'Discussion',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
