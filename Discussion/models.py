@@ -32,7 +32,7 @@ class Topic(models.Model):
         related_name='topics'
     )
     title = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=500)
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text="When the Topic was created"
