@@ -69,6 +69,10 @@ class News(models.Model):
         default=0, # Default to 0 likes
         help_text="The number of likes this news post has received."
     )
+    comment_count = models.IntegerField(
+        default=0, # Default to 0 likes
+        help_text="The number of comment this news post has received."
+    )
     
     # ForeignKey field: This is the core of the one-to-many relationship.
     # - 'Page': Specifies the model this field relates to (the 'one' side).
