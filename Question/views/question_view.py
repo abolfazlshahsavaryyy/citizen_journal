@@ -15,9 +15,10 @@ from Question.serilizers.question_ser import (
 
 class QuestionListCreateView(APIView):
     def get(self, request):
-        questions = Question.objects.all()
+        questions = Question.objects.select_related('topic').all()
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
+
     @swagger_auto_schema(
         request_body=QuestionCreateSerializer,
         responses={201: QuestionCreateSerializer}
