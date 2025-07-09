@@ -42,6 +42,7 @@ urlpatterns = [
     path('pages/', include('Page.urls')),
     path('comment/',include('Comment.urls')),
     path('discussion/',include("Discussion.urls")),
+    path('question/',include("Question.urls")),
     path('admin/', admin.site.urls),
     
     # Swagger UI:
