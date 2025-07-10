@@ -1,11 +1,11 @@
 from django.db import models
-
+from django.conf import settings
 class Comment(models.Model):
     content = models.CharField(
         max_length=500,
         help_text="This is the content of the comment"
     )
-    
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     # Self-referencing foreign key to allow nested comments (replies)
     reply = models.ForeignKey(
         'self',                          # Reference to the same model

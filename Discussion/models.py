@@ -1,5 +1,5 @@
 from django.db import models
-
+from Page.models import Page
 class Discussion(models.Model):
     name = models.CharField(
         max_length=100,
@@ -21,7 +21,7 @@ class Discussion(models.Model):
         auto_now=True,
         help_text="Last time the discussion was updated"
     )
-
+    page=models.OneToOneField(Page,on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 

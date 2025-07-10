@@ -13,9 +13,10 @@ from Question.serilizers.answer_ser import (
 
 class AnswerListCreateView(APIView):
     def get(self, request):
-        answers = Answer.objects.all()
+        answers = Answer.objects.select_related('question').all()
         serializer = AnswerListSerializer(answers, many=True)
         return Response(serializer.data)
+
 
     def post(self, request):
         serializer = AnswerCreateSerializer(data=request.data)

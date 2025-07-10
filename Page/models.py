@@ -1,5 +1,5 @@
 # myapp/models.py (Example content for a Django app's models.py file)
-
+from django.conf import settings
 from django.db import models
 
 # Model 1: The "One" side of the relationship (e.g., a social media page)
@@ -13,6 +13,7 @@ class Page(models.Model):
         unique=True, # Ensure page names are unique
         help_text="The unique name of the page."
     )
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     post_count = models.IntegerField(
         default=0, # Default to 0 posts
         help_text="The total number of posts on this page."
