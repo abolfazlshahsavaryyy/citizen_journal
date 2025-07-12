@@ -87,6 +87,12 @@ class News(models.Model):
         help_text='Each news post must be associated with one page.'
         # null=False is the default for ForeignKey, so it's omitted for conciseness
     )
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='liked_news',
+        blank=True,
+        help_text='Users who liked this news post.'
+    )
     
     published_date = models.DateTimeField(auto_now_add=True, help_text="The date and time the news post was published.")
     updated_at = models.DateTimeField(auto_now=True, help_text="The date and time the news post was last updated.")
@@ -100,4 +106,7 @@ class News(models.Model):
         Returns a string representation of the News instance.
         """
         return f"News: {self.title} | Page: {self.page.name}"
+    
+
+
 
