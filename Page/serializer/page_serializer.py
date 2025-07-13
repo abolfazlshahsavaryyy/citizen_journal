@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import Page, News
+from django.contrib.auth import get_user_model
 
 #this class is not for here 
 #it has to be in vserializer/news_serializer
@@ -22,19 +23,15 @@ class NewsSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
         read_only_fields = ['id', 'published_date', 'updated_at']
+# Account/serializers.py
+class MiniUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username']
 
 
 class PageSerializer(serializers.ModelSerializer):
-    # Nested news posts (read-only for display)
-    # news_posts = NewsSerializer(many=True, read_only=True)
-
-    # # Follows relationship - show by name or ID (choose one)
-    # follows = serializers.SlugRelatedField(
-    #     slug_field='id',  # or 'id' for PrimaryKeyRelatedField
-    #     queryset=Page.objects.all(),
-    #     many=True,
-    #     required=False
-    # )
+    user = MiniUserSerializer(read_only=True)
 
     class Meta:
         model = Page
@@ -45,12 +42,12 @@ class PageSerializer(serializers.ModelSerializer):
             'follower_count',
             'following_count',
             'page_description',
-            
             'created_at',
             'updated_at',
-            
+            'user',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class PageCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,7 +65,7 @@ class PageCreateSerializer(serializers.ModelSerializer):
 
 class PageDetailseSerializer(serializers.ModelSerializer):
     news_posts = NewsSerializer(many=True, read_only=True)
-
+    user=MiniUserSerializer(read_only=True)
     # Follows relationship - show by name or ID (choose one)
     follows = serializers.SlugRelatedField(
         slug_field='id',  # or 'id' for PrimaryKeyRelatedField
