@@ -57,3 +57,24 @@ class NewsDetailView(APIView):
             return Response({"error": "News post not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+class NewsUserView(APIView):
+    
+
+    def get(self, request):
+        # Get the current user
+        user = request.user
+
+        # Get all pages that belong to this user
+        user_pages = Page.objects.filter(user=user)
+
+        # Get all news posts for these pages (in a single query using __in)
+        user_news = News.objects.filter(page__in=user_pages).select_related('page').order_by('-published_date')
+
+        # Serialize the news posts
+        serializer = NewsReadSerializer(user_news, many=True)
+
+        return Response(serializer.data)
+
+

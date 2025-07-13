@@ -14,5 +14,7 @@ urlpatterns = [
     path('news/', NewsListCreateView.as_view(), name='news-list-create'),
     path('news/<int:pk>/', NewsDetailView.as_view(), name='news-detail'),
     path('news/likes/', NewsLikeView.as_view(), name='news-like'),
-    path('news/likes/<int:pk>', NewsUnlikeView.as_view(), name='news_unlike')
+    path('news/likes/<int:pk>', NewsUnlikeView.as_view(), name='news_unlike'),
+    path('news/user/<int:pk>', NewsUserView.as_view(), name='news_user')
+
 ]
