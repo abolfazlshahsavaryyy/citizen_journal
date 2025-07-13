@@ -36,3 +36,7 @@ class NewsLikeReadSerializer(serializers.Serializer):
     news_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
 
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
