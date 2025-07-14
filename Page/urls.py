@@ -20,5 +20,6 @@ urlpatterns = [
     path('news/user/<int:pk>', NewsUserView.as_view(), name='news_user'),
     path('pages/<int:page_id>/followers/', PageFollowersView.as_view(), name='page-followers'),
     path('pages/<int:page_id>/following/', PageFollowingView.as_view(), name='page-following'),
+    path('predict-news/<int:news_id>/', PredictNewsView.as_view(), name='predict-news'),
 
 ]

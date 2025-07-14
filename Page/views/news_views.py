@@ -109,3 +109,45 @@ class NewsUserView(APIView):
         return Response(serializer.data)
 
 
+
+
+###################################################################################################
+###########   predict the fake news              ##################################################
+###################################################################################################
+###################################################################################################
+
+# views.py
+import requests
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from Page.models import News
+
+class PredictNewsView(APIView):
+    """
+    Given a news_id, this view calls the FastAPI prediction service
+    and returns the result (fake/real prediction and confidence).
+    """
+
+    def get(self, request, news_id):
+        try:
+            news = News.objects.get(pk=news_id)
+        except News.DoesNotExist:
+            return Response({'error': 'News not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Prepare payload
+        payload = {
+            'title': news.title,
+            'text': news.text
+        }
+
+        try:
+            # Send POST request to FastAPI endpoint
+            response = requests.post("http://localhost:8001/predict/logistic-regression", json=payload)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            return Response({'error': 'Prediction service failed', 'details': str(e)},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        # Return the prediction response from FastAPI
+        return Response(response.json())

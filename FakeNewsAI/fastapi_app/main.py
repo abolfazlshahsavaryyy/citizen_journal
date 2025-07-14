@@ -23,7 +23,8 @@ class NewsRequest(BaseModel):
 def predict_logistic(news: NewsRequest):
     news_instance = News(news.title, news.text)
     prediction = news_instance.predict_logistic_regression(lr_model)
-    return {"prediction": prediction}
+    return prediction
+
 
 # SVC endpoint
 @app.post("/predict/svc")

@@ -1,2 +1,4 @@
 .env
 venv/
+FakeNewsAI/Fake.csv
+FakeNewsAI/True.csv
