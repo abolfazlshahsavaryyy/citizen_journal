@@ -36,3 +36,24 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['content', 'news', 'reply']
+
+
+class CommentUpdateSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+
+class RecursiveCommentSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'user', 'replies']
+
+    def get_replies(self, obj):
+        children = obj.replies.all()
+        return RecursiveCommentSerializer(children, many=True).data
+
