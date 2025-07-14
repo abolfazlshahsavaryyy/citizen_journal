@@ -18,5 +18,27 @@ services:
       timeout: 5s
       retries: 5
 
+
+
+
+
+  fastapi:
+    build:
+      context: ./FakeNewsAI/fastapi_app
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./FakeNewsAI/fastapi_app:/app
+    depends_on:
+      - db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: no
+
+
+
 volumes:
   pgdata:

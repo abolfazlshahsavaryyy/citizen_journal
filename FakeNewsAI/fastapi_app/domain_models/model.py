@@ -1,7 +1,8 @@
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 from sklearn.svm import LinearSVC
-from fastapi_app.preprocessing.clean_data import clean_data
+from preprocessing.clean_data import clean_data
+
 class News:
     def __init__(self,title,text):
         self.title=title

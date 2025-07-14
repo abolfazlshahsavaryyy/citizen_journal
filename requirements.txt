@@ -1,0 +1,10 @@
+
+djangorestframework
+drf-yasg
+djangorestframework-simplejwt
+pandas
+numpy
+scikit-learn
+textstat
+psycopg2-binaryry
+Pillowow

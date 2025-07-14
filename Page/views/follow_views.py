@@ -1,89 +1,125 @@
-# api that get the Id and show the all pages that this page with that Id has follows
-# api that get the Id and show the all page that this page has follwed_by
-# api to add new follow and followed_by relation
-# api to delete the relation of following
 # views.py
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
+from rest_framework import status, permissions
 from Page.models import Page
 from Page.serializer.follow_serializer import *
 
-class FollowListView(APIView):
-    def get(self, request):
-        """
-        
-        - GET /api/follows/  → get all follow relationships
-        """
-        
-        
-        data = []
-        pages = Page.objects.all().prefetch_related('follows')
-        for follower in pages:
-            for following in follower.follows.all():
-                data.append({
-                    "follower_id": follower.id,
-                    "follower_name": follower.name,
-                    "following_id": following.id,
-                    "following_name": following.name
-                })
-        return Response(data, status=status.HTTP_200_OK)
+class FollowPageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request):
-        serializer = FollowCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            relation = serializer.save()
-            return Response({
-                "message": "Follow relationship created successfully.",
-                "follower": relation['follower'].name,
-                "following": relation['following'].name,
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, follower_page_id, target_page_id):
+        try:
+            follower_page = Page.objects.get(id=follower_page_id, user=request.user)
+        except Page.DoesNotExist:
+            return Response({"detail": "You do not own this follower page."}, status=status.HTTP_403_FORBIDDEN)
+
+        if follower_page_id == target_page_id:
+            return Response({"detail": "A page cannot follow itself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            target_page = Page.objects.get(id=target_page_id)
+        except Page.DoesNotExist:
+            return Response({"detail": "Target page does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if target_page in follower_page.follows.all():
+            return Response({"detail": "Already following this page."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Perform the follow
+        follower_page.follows.add(target_page)
+
+        # Update counts
+        follower_page.following_count += 1
+        target_page.follower_count += 1
+        follower_page.save()
+        target_page.save()
+
+        data = {
+            "message": f"{follower_page.name} now follows {target_page.name}.",
+            "follower_count": target_page.follower_count,
+            "following_count": follower_page.following_count,
+        }
+        serializer = FollowSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class UnfollowPageView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, follower_page_id, target_page_id):
+        # ✅ Ownership check
+        try:
+            follower_page = Page.objects.get(id=follower_page_id, user=request.user)
+        except Page.DoesNotExist:
+            return Response(
+                {"detail": "You do not own this page."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # ✅ Self-unfollow prevention
+        if follower_page_id == target_page_id:
+            return Response(
+                {"detail": "A page cannot unfollow itself."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ✅ Target existence check
+        try:
+            target_page = Page.objects.get(id=target_page_id)
+        except Page.DoesNotExist:
+            return Response(
+                {"detail": "Target page does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # ✅ Must already follow
+        if target_page not in follower_page.follows.all():
+            return Response(
+                {"detail": "This page is not currently followed."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # ✅ Remove follow
+        follower_page.follows.remove(target_page)
+
+        # ✅ Update counters
+        follower_page.following_count = max(0, follower_page.following_count - 1)
+        target_page.follower_count = max(0, target_page.follower_count - 1)
+        follower_page.save()
+        target_page.save()
+
+        data = {
+            "message": f"{follower_page.name} has unfollowed {target_page.name}.",
+            "follower_count": target_page.follower_count,
+            "following_count": follower_page.following_count,
+        }
+
+        serializer = UnfollowSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 
 
-class FollowDetailesView(APIView):
+class PageFollowersView(APIView):
+    def get(self, request, page_id):
+        try:
+            page = Page.objects.get(id=page_id)
+        except Page.DoesNotExist:
+            return Response({"detail": "Page not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    def get(self, request, pk=None):
-        action = request.query_params.get("type")  # expects 'following' or 'followers'
+        followers = page.followed_by.all()
+        serializer = PageSummarySerializer(followers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        page = get_object_or_404(Page, pk=pk)
 
-        if action == "following":
-            follows = page.follows.all()
-            serializer = PageMinimalSerializer(follows, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+class PageFollowingView(APIView):
+    def get(self, request, page_id):
+        try:
+            page = Page.objects.get(id=page_id)
+        except Page.DoesNotExist:
+            return Response({"detail": "Page not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        elif action == "followers":
-            followers = page.followed_by.all()
-            serializer = PageMinimalSerializer(followers, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(
-            {"error": "Please specify 'type' as 'following' or 'followers' in query params."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    
-    def delete(self, request):
-        follower_id = request.data.get("follower_id")
-        following_id = request.data.get("following_id")
-
-        if not follower_id or not following_id:
-            return Response({"error": "Both follower_id and following_id are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        follower = get_object_or_404(Page, pk=follower_id)
-        following = get_object_or_404(Page, pk=following_id)
-
-        if following in follower.follows.all():
-            follower.follows.remove(following)
-            # Optionally update counters
-            follower.following_count -= 1
-            following.follower_count -= 1
-            follower.save()
-            following.save()
-            return Response({"message": "Unfollowed successfully."}, status=status.HTTP_204_NO_CONTENT)
-
-        return Response({"error": "This follow relationship does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+        following = page.follows.all()
+        serializer = PageSummarySerializer(following, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

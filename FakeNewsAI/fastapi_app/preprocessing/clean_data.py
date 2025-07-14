@@ -1,5 +1,5 @@
 import pandas as pd
-from fastapi_app.preprocessing.extrac_features import extract_features
+from preprocessing.extrac_features import extract_features
 def clean_data(df):
     df["length_text"] = df["text"].apply(len)
     df["length_title"] = df["title"].apply(len)
