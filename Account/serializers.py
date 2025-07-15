@@ -39,11 +39,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             page_description=f"{user.username}'s default page"
         )
 
-        # Create Discussion
-        Discussion.objects.create(
-            name=f"{user.username}'s discussion",
-            description="Auto-created discussion for user page",
-            page=page
-        )
+        
 
         return user

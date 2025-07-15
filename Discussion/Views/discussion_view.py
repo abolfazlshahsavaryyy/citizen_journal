@@ -8,7 +8,7 @@ from Discussion.Serializers.discussion_serializer import (
     DiscussionDetailSerializer,
     DiscussionCreateUpdateSerializer
 )
-
+from drf_yasg.utils import swagger_auto_schema
 
 class DiscussionListCreateView(APIView):
     """
@@ -19,15 +19,10 @@ class DiscussionListCreateView(APIView):
         discussions = Discussion.objects.all()
         serializer = DiscussionListSerializer(discussions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    #add the api endpoint to add new Discussion for deleted discussion 
 
-    def post(self, request):
-        serializer = DiscussionCreateUpdateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+    
 class DiscussionDetailView(APIView):
     """
     Handles GET (retrieve), PUT (update), DELETE (delete) a single discussion
@@ -40,16 +35,30 @@ class DiscussionDetailView(APIView):
         discussion = self.get_object(pk)
         serializer = DiscussionDetailSerializer(discussion)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    @swagger_auto_schema(
+        request_body=DiscussionCreateUpdateSerializer,
+        responses={201: DiscussionCreateUpdateSerializer}
+    )
     def put(self, request, pk):
         discussion = self.get_object(pk)
+
+        # 🔒 Permission check: Is the current user the owner of the page?
+        if discussion.page.user != request.user:
+            return Response({'detail': 'You do not have permission to edit this discussion.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
         serializer = DiscussionCreateUpdateSerializer(discussion, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         discussion = self.get_object(pk)
+        if(discussion.page.user!=request.user):
+            return Response({'detail': 'You do not have permission to delete this discussion.'},
+                            status=status.HTTP_403_FORBIDDEN)
         discussion.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
