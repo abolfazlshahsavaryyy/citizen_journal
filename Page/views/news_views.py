@@ -7,6 +7,8 @@ from Page.serializer.news_serializer import NewsCreateSerializer, NewsReadSerial
 from django.shortcuts import get_object_or_404
 from Page.models import Page
 from drf_yasg.utils import swagger_auto_schema
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from drf_yasg import openapi
 
 class NewsListCreateView(APIView):
     def get(self, request):
@@ -151,3 +153,44 @@ class PredictNewsView(APIView):
 
         # Return the prediction response from FastAPI
         return Response(response.json())
+    
+
+
+###############################################################################
+#######################  search news     ######################################
+###############################################################################
+
+class NewsSearchView(APIView):
+    """
+    Search News by title and text using weighted full-text search.
+    Title is given higher priority than text.
+    """
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'q', openapi.IN_QUERY, 
+                description="Search query string (e.g. 'budget deficit')", 
+                type=openapi.TYPE_STRING,
+                required=True
+            )
+        ]
+    )
+    def get(self, request):
+        query = request.query_params.get('q')
+        if not query:
+            return Response({'detail': 'Missing search query parameter `q`.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Define the search vector with weights
+        vector = (
+            SearchVector('title', weight='A') +
+            SearchVector('text', weight='B')
+        )
+        search_query = SearchQuery(query)
+        
+        # Annotate each News item with a rank
+        results = News.objects.annotate(
+            rank=SearchRank(vector, search_query)
+        ).filter(rank__gte=0.05).order_by('-rank')
+
+        serializer = NewsReadSerializer(results, many=True)
+        return Response(serializer.data)
