@@ -8,11 +8,11 @@ app = FastAPI()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # /app
 
-lr_model_path = os.path.join(BASE_DIR, "models", "LogisticRegression(max_iter=1000).pkl")
-svc_model_path = os.path.join(BASE_DIR, "models", "LinearSVC(C=0.01).pkl")
+lr_model_path = os.path.join(BASE_DIR, "models", "LogisticRegression(C=10, max_iter=1000).pkl")
+
 
 lr_model = joblib.load(lr_model_path)
-svc_model = joblib.load(svc_model_path)
+
 # Request schema
 class NewsRequest(BaseModel):
     title: str
@@ -26,9 +26,3 @@ def predict_logistic(news: NewsRequest):
     return prediction
 
 
-# SVC endpoint
-@app.post("/predict/svc")
-def predict_svc(news: NewsRequest):
-    news_instance = News(news.title, news.text)
-    prediction = news_instance.predict_svc(svc_model)
-    return {"prediction": prediction}
