@@ -30,7 +30,13 @@ class DiscussionDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class DiscussionCreateUpdateSerializer(serializers.ModelSerializer):
+class DiscussionUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discussion
         fields = ['name', 'description', 'is_active']
+
+
+class DiscussionCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discussion
+        fields = ['name', 'description', 'is_active','page']
