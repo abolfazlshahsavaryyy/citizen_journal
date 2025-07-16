@@ -26,7 +26,7 @@ class QuestionListCreateView(APIView):
     def post(self, request):
         serializer = QuestionCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -42,13 +42,27 @@ class QuestionUpdateDeleteView(APIView):
     )
     def put(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
+
+        if question.user != request.user:
+            return Response(
+                {'message': 'You are not allowed to update this question.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         serializer = QuestionUpdateSerializer(question, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save()  # ✅ No need to pass user here
             return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk):
         question = get_object_or_404(Question, pk=pk)
+        if(question.user!=request.user):
+            return Response(
+                {'message': 'You are not allowed to update this question.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         question.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
