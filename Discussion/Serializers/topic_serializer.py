@@ -21,9 +21,11 @@ class TopicCreateSerializer(serializers.ModelSerializer):
 
 class TopicUpdateSerializer(serializers.ModelSerializer):
     discussion = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Topic
-        fields = ['discussion', 'title','description']
+        fields = ['discussion', 'title', 'description']
+
 
 
 class DiscussionBasicSerializer(serializers.ModelSerializer):
