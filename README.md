@@ -76,7 +76,7 @@ An intelligent microservice built with **FastAPI** that detects the authenticity
 
 ---
 
-## 🚀 How to Use the API
+# How to Use the API
 
 Follow these steps to get the API service up and running locally:
 
