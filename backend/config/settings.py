@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'Question',
     'rest_framework_simplejwt',
-    'Account'
+    'Account',
+    'frontend'
 ]
 INSTALLED_APPS += ["corsheaders"]
 MIDDLEWARE = [
