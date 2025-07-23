@@ -26,24 +26,19 @@
 
     <div class="mb-3">
         <h4 class="mb-3">📰 News Posts</h4>
-        {% if page.news_posts %}
-        <div class="list-group">
-            {% for post in page.news_posts %}
+        {% for post in page.news_posts %}
             <div class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <h5 class="mb-1">
+                        <a href="{% url 'news_detail' post.id %}" class="text-decoration-none">{{ post.title }}</a>
+                    </h5>
                     <small class="text-muted">{{ post.published_date|date:"Y-m-d H:i" }}</small>
                 </div>
                 <p class="mb-1">{{ post.text }}</p>
                 <small class="text-muted">Likes: {{ post.like_count }}</small>
             </div>
             {% endfor %}
-        </div>
-        {% else %}
-        <div class="alert alert-warning" role="alert">
-            No posts yet.
-        </div>
-        {% endif %}
+
     </div>
 </div>
 
