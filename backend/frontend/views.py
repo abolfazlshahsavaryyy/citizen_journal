@@ -88,3 +88,57 @@ def page_detail_view(request, page_id):
         page_data = {"error": "Request failed", "details": str(e)}
 
     return render(request, 'frontend/page_detail.html', {'page': page_data})
+
+def news_detail_view(request, news_id):
+    access_token = request.session.get('access_token')
+    if not access_token:
+        return redirect('login')
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+    api_url = f'http://127.0.0.1:8000/pages/news/{news_id}/'
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        news = response.json()
+        return render(request, 'frontend/news_detail.html', {'news': news})
+    else:
+        return render(request, 'frontend/news_detail.html', {'error': 'Failed to load news post.'})
+    
+
+def predict_news_view(request, news_id):
+    access_token = request.session.get('access_token')
+    if not access_token:
+        return redirect('login')
+
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+
+    api_url = f'http://127.0.0.1:8000/pages/predict-news/{news_id}/'
+    response = requests.get(api_url, headers=headers)
+
+    if response.status_code == 200:
+        prediction = response.json()
+        return render(request, 'frontend/prediction_result.html', {'prediction': prediction})
+    else:
+        return render(request, 'frontend/prediction_result.html', {
+            'error': 'Failed to retrieve prediction.'
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
