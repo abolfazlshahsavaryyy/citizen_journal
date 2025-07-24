@@ -24,12 +24,12 @@ services:
 
   fastapi:
     build:
-      context: ./backend/FakeNewsAI/fastapi_app
+      context: ./backend/fastapi_backend/FakeNewsAI/fastapi_app
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
     volumes:
-      - ./backend/FakeNewsAI/fastapi_app:/app
+      - ./backend/fastapi_backend/FakeNewsAI/fastapi_app:/app
     depends_on:
       - db
     environment:
