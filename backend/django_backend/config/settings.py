@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'Question',
     'rest_framework_simplejwt',
     'Account',
-    'frontend'
+    
 ]
 INSTALLED_APPS += ["corsheaders"]
 MIDDLEWARE = [
@@ -111,13 +111,14 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'mydb'),
-        'USER': os.getenv('POSTGRES_USER', 'myuser'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'mypassword'),
-        'HOST': '127.0.0.1',
-        'PORT': '5433',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
+        'HOST': 'db',  # IMPORTANT: this must match the docker service name
+        'PORT': '5432',
     }
 }
+
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
