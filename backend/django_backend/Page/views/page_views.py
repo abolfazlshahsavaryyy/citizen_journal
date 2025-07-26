@@ -1,7 +1,7 @@
 # myapp/views.py
 
 from rest_framework.views import APIView
-from ..models import Page
+from Page.models.Page import Page
 from Page.serializer.page_serializer import *
 from rest_framework.response import Response
 from rest_framework import status

@@ -2,8 +2,8 @@
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Page
-from Discussion.models import Discussion
+from Page.models.Page import Page
+from Discussion.models.Discussion import Discussion
 
 @receiver(post_save, sender=Page)
 def create_discussion_for_page(sender, instance, created, **kwargs):

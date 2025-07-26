@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from Question.models.question import Question
-from Discussion.models import Topic
+from Discussion.models.Topic import Topic
 
 class TopicMiniSerializer(serializers.ModelSerializer):
     class Meta:

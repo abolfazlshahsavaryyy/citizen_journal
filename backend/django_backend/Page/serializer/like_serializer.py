@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from Page.models import News
+from Page.models.News import News
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

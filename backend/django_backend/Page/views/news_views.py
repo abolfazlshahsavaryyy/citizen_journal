@@ -2,10 +2,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from Page.models import News
 from Page.serializer.news_serializer import NewsCreateSerializer, NewsReadSerializer
 from django.shortcuts import get_object_or_404
-from Page.models import Page
+from Page.models.Page import Page
+from Page.models.News import News
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from drf_yasg import openapi
@@ -123,7 +123,7 @@ import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from Page.models import News
+from Page.models.News import News
 
 class PredictNewsView(APIView):
     """

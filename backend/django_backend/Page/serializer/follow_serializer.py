@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from Page.models import Page
+from Page.models.Page import Page
 
 class FollowSerializer(serializers.Serializer):
     message = serializers.CharField()

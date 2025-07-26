@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from ..models import Page, News
+from Page.models.Page import Page
+from Page.models.News import News
 from django.contrib.auth import get_user_model
 
 #this class is not for here 

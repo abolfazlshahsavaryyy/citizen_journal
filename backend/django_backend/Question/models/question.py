@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from Discussion.models import Topic
+from Discussion.models.Topic import Topic
 
 class Question(models.Model):
     content = models.TextField(help_text="The text/content of the question.")

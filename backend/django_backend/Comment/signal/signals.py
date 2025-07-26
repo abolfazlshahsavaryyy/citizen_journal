@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from Comment.models import Comment
-from Page.models import News
+from Page.models.News import News
 
 @receiver(post_save, sender=Comment)
 def increment_comment_count(sender, instance, created, **kwargs):

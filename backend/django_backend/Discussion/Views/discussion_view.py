@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from Discussion.models import Discussion
+from Discussion.models.Discussion import Discussion
 from Discussion.Serializers.discussion_serializer import *
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated

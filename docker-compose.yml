@@ -41,22 +41,22 @@ services:
 
     
 
-  # django:
-  #   build:
-  #     context: ./backend/django_backend
-  #     dockerfile: Dockerfile
-  #   command: python manage.py runserver 0.0.0.0:8000
-  #   volumes:
-  #     - ./backend/django_backend:/app
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #   restart: no
+  django:
+    build:
+      context: ./backend/django_backend
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend/django_backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: no
 
 
 

@@ -38,7 +38,7 @@ class AnswerDetailView(APIView):
         return Response(serializer.data)
     @swagger_auto_schema(
         request_body=AnswerUpdateSerializer,
-        responses={201: AnswerUpdateSerializer}
+        responses={200: AnswerUpdateSerializer}
     )
     def put(self, request, pk):
         answer = get_object_or_404(Answer, pk=pk)
@@ -57,7 +57,7 @@ class AnswerDetailView(APIView):
         answer = get_object_or_404(Answer, pk=pk)
         if(answer.user!=request.user):
             return Response(
-                {'message': 'You are not allowed to update this question.'},
+                {'message': 'You are not allowed to delete this question.'},
                 status=status.HTTP_403_FORBIDDEN
             )
         answer.delete()

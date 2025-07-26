@@ -2,7 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from Page.models import Page
+from Page.models.Page import Page
 from Page.serializer.follow_serializer import *
 
 class FollowPageView(APIView):

@@ -1,7 +1,7 @@
 # serializers.py
 from rest_framework import serializers
-from Page.models import News
-from Page.models import Page
+from Page.models.News import News
+from Page.models.Page import Page
 
 class NewsCreateSerializer(serializers.ModelSerializer):
     class Meta:

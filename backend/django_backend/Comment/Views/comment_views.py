@@ -11,7 +11,7 @@ from Comment.Serializers.comment_serializer import (
 )
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
-from Page.models import News
+from Page.models.News import News
 
 # API for listing and creating comments
 class CommentListCreateAPIView(APIView):

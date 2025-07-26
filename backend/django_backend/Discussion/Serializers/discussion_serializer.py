@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from Discussion.models import Discussion, Topic
+from Discussion.models.Discussion import Discussion
+from Discussion.models.Topic import Topic
 
 
 class DiscussionListSerializer(serializers.ModelSerializer):
