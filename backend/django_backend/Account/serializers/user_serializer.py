@@ -1,18 +1,8 @@
-# accounts/serializers.py
-
 from rest_framework import serializers
-from .models import Profile
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['id', 'bio', 'avatar', 'created_at', 'updated_at', 'reputation', 'last_activity']
-
-# Account/serializers.py
-from rest_framework import serializers
-from Account.models import ApplicationUser, Profile
+from Account.models.Profile  import  Profile
+from Account.models.ApplicationUser import ApplicationUser
 from Page.models import Page
-from Discussion.models import Discussion
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
