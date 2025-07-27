@@ -2,13 +2,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from Page.serializer.news_serializer import NewsCreateSerializer, NewsReadSerializer
+from Page.serializer.news_serializer import *
 from django.shortcuts import get_object_or_404
 from Page.models.Page import Page
 from Page.models.News import News
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from drf_yasg import openapi
+from services.news_service import NewsService
 
 class NewsListCreateView(APIView):
     def get(self, request):
@@ -32,11 +33,12 @@ class NewsListCreateView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-            news = serializer.save()
+            news = NewsService.create_news(serializer.validated_data)
             read_serializer = NewsReadSerializer(news)
             return Response(read_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class NewsDetailView(APIView):
     def get_object(self, pk):
@@ -47,9 +49,9 @@ class NewsDetailView(APIView):
         serializer = NewsReadSerializer(news)
         return Response(serializer.data)
     @swagger_auto_schema(
-        request_body=NewsCreateSerializer,
-        responses={201: NewsCreateSerializer}
-    )
+    request_body=NewsUpdateSerializer,
+    responses={200: NewsReadSerializer}
+)
     def put(self, request, pk):
         news = self.get_object(pk)
 
@@ -60,10 +62,10 @@ class NewsDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = NewsCreateSerializer(news, data=request.data, partial=True)
+        serializer = NewsUpdateSerializer(news, data=request.data, partial=True)
         if serializer.is_valid():
-            news = serializer.save()
-            read_serializer = NewsReadSerializer(news)
+            updated_news = NewsService.update_news(news, serializer.validated_data)
+            read_serializer = NewsReadSerializer(updated_news)
             return Response(read_serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -71,21 +73,20 @@ class NewsDetailView(APIView):
 
     def delete(self, request, pk):
         try:
-            news = self.get_object(pk)  # assumes you're in a DRF ViewSet or APIView
-
-            page = news.page  # ✅ Proper way to access the related page
-            if(page.user!=request.user):
+            news = self.get_object(pk)
+    
+            # ✅ Ownership check
+            if news.page.user != request.user:
                 return Response(
-                    {'error':'owenership error'},
+                    {'error': 'You are not allowed to delete this news post.'},
                     status=status.HTTP_403_FORBIDDEN
                 )
-            if page.post_count > 0:
-                page.post_count -= 1
-                page.save()
-
-            news.delete()
+    
+            # Use service for deletion
+            NewsService.delete_news(news)
+    
             return Response(status=status.HTTP_204_NO_CONTENT)
-
+    
         except News.DoesNotExist:
             return Response({"error": "News post not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
