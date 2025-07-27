@@ -1,34 +1,20 @@
+# Account/serializers/user_serializer.py
+
 from rest_framework import serializers
-from Account.models.Profile  import  Profile
 from Account.models.ApplicationUser import ApplicationUser
-from Page.models import Page
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
-    class Meta:
-        model = ApplicationUser
-        fields = ['username', 'email', 'password']
+    def validate_username(self, value):
+        if ApplicationUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already taken.")
+        return value
 
-    def create(self, validated_data):
-        user = ApplicationUser.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            role='citizen'  # Always citizen
-        )
-
-        # Create Profile
-        Profile.objects.create(user=user)
-
-        # Create Page
-        page = Page.objects.create(
-            name=f"{user.username}_page",
-            user=user,
-            page_description=f"{user.username}'s default page"
-        )
-
-        
-
-        return user
+    def validate_email(self, value):
+        if ApplicationUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already in use.")
+        return value

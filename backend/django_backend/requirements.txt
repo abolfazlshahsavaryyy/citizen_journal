@@ -9,5 +9,5 @@ textstat
 psycopg2-binary
 django-cors-headers
 requests
-
+pytest
 Pillow
