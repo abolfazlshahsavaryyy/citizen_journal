@@ -55,14 +55,6 @@ class PageCreateSerializer(serializers.ModelSerializer):
         model = Page
         fields = ['name', 'page_description']
 
-    def create(self, validated_data):
-        # Add default values here before saving
-        validated_data['post_count'] = 0
-        validated_data['follower_count'] = 0
-        validated_data['following_count'] = 0
-        # Now create the instance with those values
-        return Page.objects.create(**validated_data)
-    
 
 class PageDetailseSerializer(serializers.ModelSerializer):
     news_posts = NewsSerializer(many=True, read_only=True)
