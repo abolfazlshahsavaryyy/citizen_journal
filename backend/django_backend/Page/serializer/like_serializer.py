@@ -5,31 +5,20 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class NewsLikeCreateSerializer(serializers.Serializer):
+class NewsToggleLikeSerializer(serializers.Serializer):
     news_id = serializers.IntegerField()
-    user_id = serializers.IntegerField()
 
-    def validate(self, data):
-        # Ensure News and User exist
+    def validate_news_id(self, value):
         try:
-            data['news'] = News.objects.get(id=data['news_id'])
+            news = News.objects.get(id=value)
         except News.DoesNotExist:
-            raise serializers.ValidationError("News post not found.")
-
-        try:
-            data['user'] = User.objects.get(id=data['user_id'])
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User not found.")
-
-        return data
+            raise serializers.ValidationError("News not found.")
+        return news
 
     def create(self, validated_data):
-        news = validated_data['news']
-        user = validated_data['user']
-        news.likes.add(user)
-        news.like_count = news.likes.count()
-        news.save()
-        return {'news_id': news.id, 'user_id': user.id}
+        # Not used here because service handles logic
+        pass
+
     
 # serializers.py (continue)
 class NewsLikeReadSerializer(serializers.Serializer):
