@@ -12,7 +12,7 @@ from Comment.Serializers.comment_serializer import (
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from Page.models.News import News
-
+from Comment.services.comment_service import *
 # API for listing and creating comments
 class CommentListCreateAPIView(APIView):
 
@@ -22,14 +22,29 @@ class CommentListCreateAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     @swagger_auto_schema(
         request_body=CommentCreateSerializer,
-        responses={201: CommentCreateSerializer}
+        responses={200: CommentCreateSerializer}
     )
     def post(self, request):
         serializer = CommentCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Call service
+        try:
+            comment = create_comment(
+            user=request.user,
+            content=serializer.validated_data['content'],
+            news=serializer.validated_data['news'],
+            reply=serializer.validated_data.get('reply')
+            )
+        except ValidationError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        # Return serialized response
+        response_serializer = CommentCreateSerializer(comment)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 # API for retrieving, updating, and deleting a specific comment
@@ -47,26 +62,31 @@ class CommentDetailAPIView(APIView):
         responses={201: CommentUpdateSerializer}
     )
     def put(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
+        # Validate input
+        serializer = CommentUpdateSerializer(data=request.data, partial=True)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if request.user != comment.user:
-            return Response({'detail': 'You are not allowed to update this comment.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        try:
+            updated_comment = update_comment(
+                user=request.user,
+                comment_id=pk,
+                data=serializer.validated_data
+            )
+        except PermissionDenied as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = CommentUpdateSerializer(comment, data=request.data, partial=True)
-        if serializer.is_valid():
-            updated_comment = serializer.save()
-            return Response(CommentDetailSerializer(updated_comment).data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            CommentDetailSerializer(updated_comment).data,
+            status=status.HTTP_200_OK
+        )
 
     def delete(self, request, pk):
-        comment = self.get_object(pk)
-        if(comment.user!=request.user):
-            return Response({'detail': 'You are not allowed to update this comment.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        
-        comment.delete()
+        try:
+            delete_comment(user=request.user, comment_id=pk)
+        except PermissionDenied as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class CommentNewsView(APIView):
