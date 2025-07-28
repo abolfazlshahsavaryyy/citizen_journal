@@ -6,7 +6,8 @@ from Discussion.models.Discussion import Discussion
 from Discussion.Serializers.discussion_serializer import *
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
-from Page.models import Page
+from Page.models.Page import Page
+from Discussion.services.discussion_service import *
 
 class DiscussionListCreateView(APIView):
     """
@@ -38,26 +39,30 @@ class DiscussionDetailView(APIView):
         responses={201: DiscussionUpdateSerializer}
     )
     def put(self, request, pk):
-        discussion = self.get_object(pk)
+        serializer = DiscussionUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # 🔒 Permission check: Is the current user the owner of the page?
-        if discussion.page.user != request.user:
-            return Response({'detail': 'You do not have permission to edit this discussion.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        try:
+            updated_discussion = update_discussion(
+                user=request.user,
+                discussion_id=pk,
+                data=serializer.validated_data
+            )
+        except PermissionDenied as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
 
-        serializer = DiscussionUpdateSerializer(discussion, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            DiscussionUpdateSerializer(updated_discussion).data,
+            status=status.HTTP_200_OK
+        )
 
     def delete(self, request, pk):
-        discussion = self.get_object(pk)
-        if(discussion.page.user!=request.user):
-            return Response({'detail': 'You do not have permission to delete this discussion.'},
-                            status=status.HTTP_403_FORBIDDEN)
-        discussion.delete()
+        try:
+            delete_discussion(user=request.user, discussion_id=pk)
+        except PermissionDenied as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
@@ -75,22 +80,22 @@ class DiscussionCreateForPageView(APIView):
         responses={201: DiscussionCreateSerializer, 400: 'Bad Request', 403: 'Forbidden'}
     )
     def post(self, request, page_pk):
-        # 1. User must be authenticated (enforced by permission_classes)
-        user = request.user
-        # 2. Get the Page by pk
-        page = get_object_or_404(Page, pk=page_pk)
-        # 3. Check if the Page already has a Discussion
-        if hasattr(page, 'discussion'):
-            return Response({'detail': 'This Page already has a Discussion configured.'}, status=status.HTTP_400_BAD_REQUEST)
-        # 4. Check if the Page belongs to the user
-        if page.user != user:
-            return Response({'detail': 'You do not have permission to create a Discussion for this Page.'}, status=status.HTTP_403_FORBIDDEN)
-        # 5. Create the Discussion
-        data = request.data.copy()
-        data['page'] = page.pk
-        serializer = DiscussionCreateSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = DiscussionCreateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            discussion = create_discussion(
+                user=request.user,
+                page_id=page_pk,
+                data=serializer.validated_data
+            )
+        except PermissionDenied as e:
+            return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
+        except ValidationError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(DiscussionCreateSerializer(discussion).data, status=status.HTTP_201_CREATED)
+
+
     
