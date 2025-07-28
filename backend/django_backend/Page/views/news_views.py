@@ -9,7 +9,7 @@ from Page.models.News import News
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from drf_yasg import openapi
-from services.news_service import NewsService
+from Page.services.news_service import *
 
 class NewsListCreateView(APIView):
     def get(self, request):

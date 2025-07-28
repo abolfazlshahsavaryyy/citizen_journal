@@ -1,50 +1,36 @@
-# views.py
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from Page.models.News import News
-from django.contrib.auth import get_user_model
 from Page.serializer.like_serializer import *
+from Page.services.like_service import *
+from drf_yasg.utils import swagger_auto_schema
+class NewsToggleLikeView(APIView):
+    """
+    POST endpoint to toggle like/unlike on a news item.
+    """
+    @swagger_auto_schema(
+        request_body=NewsToggleLikeSerializer,
+        responses={200: NewsToggleLikeSerializer}
+    )
+    def post(self, request):
+        serializer = NewsToggleLikeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-User = get_user_model()
-
-class NewsLikeView(APIView):
-    def post(self, request, news_id):
+        news = serializer.validated_data["news_id"]  # validated field replaced with object
         user = request.user
 
-        try:
-            news = News.objects.get(id=news_id)
-        except News.DoesNotExist:
-            return Response({'error': 'News not found'}, status=404)
+        action, message = toggle_news_like(news, user)
 
-        if news.likes.filter(id=user.id).exists():
-            return Response({'message': 'Already liked'}, status=400)
+        return Response({
+            "message": message,
+            "news_id": news.id,
+            "like_count": news.like_count,
+            "action": action  # 'liked' or 'unliked'
+        }, status=status.HTTP_200_OK)
 
-        news.likes.add(user)
-        news.like_count = news.likes.count()
-        news.save()
 
-        return Response({'message': 'Liked successfully', 'news_id': news.id}, status=200)
-
-    
-
-class NewsUnlikeView(APIView):
-    def delete(self, request, news_id):
-        user = request.user  # Get the current authenticated user
-
-        try:
-            news = News.objects.get(id=news_id)
-        except News.DoesNotExist:
-            return Response({'error': 'News not found.'}, status=404)
-
-        if not news.likes.filter(id=user.id).exists():
-            return Response({'message': 'You have not liked this news.'}, status=400)
-
-        news.likes.remove(user)
-        news.like_count = news.likes.count()
-        news.save()
-
-        return Response({'message': 'Unliked successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class NewsLikesListView(APIView):
