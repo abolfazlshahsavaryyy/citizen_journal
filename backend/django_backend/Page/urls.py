@@ -9,7 +9,7 @@ from Page.views.like_view import *
 urlpatterns = [
     path('pages/', PageListCreateView.as_view(), name='page-list-create'),
     path('pages/<int:pk>/', PageDetailView.as_view(), name='page-detail'),
-    path('pages/<int:follower_page_id>/follow/<int:target_page_id>/', FollowPageView.as_view(), name='follow-page'),
+    path('pages/follow/', ToggleFollowPageView.as_view(), name='follow-page'),
     path('news/', NewsListCreateView.as_view(), name='news-list-create'),
     path('news/<int:pk>/', NewsDetailView.as_view(), name='news-detail'),
     path('news/like/', NewsToggleLikeView.as_view(), name='news-like'),
