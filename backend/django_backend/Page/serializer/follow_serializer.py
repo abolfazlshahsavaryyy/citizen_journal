@@ -2,15 +2,19 @@
 from rest_framework import serializers
 from Page.models.Page import Page
 
-class FollowSerializer(serializers.Serializer):
-    message = serializers.CharField()
-    follower_count = serializers.IntegerField()
-    following_count = serializers.IntegerField()
+# serializers/follow_toggle_serializer.py
+from rest_framework import serializers
 
-class UnfollowSerializer(serializers.Serializer):
+class FollowToggleInputSerializer(serializers.Serializer):
+    follower_page_id = serializers.IntegerField()
+    target_page_id = serializers.IntegerField()
+
+    
+class FollowToggleOutputSerializer(serializers.Serializer):
     message = serializers.CharField()
     follower_count = serializers.IntegerField()
     following_count = serializers.IntegerField()
+    action = serializers.CharField()  # "followed" or "unfollowed"
 
 
 
