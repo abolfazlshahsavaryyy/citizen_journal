@@ -38,6 +38,9 @@ class DiscussionUpdateSerializer(serializers.ModelSerializer):
 
 
 class DiscussionCreateSerializer(serializers.ModelSerializer):
+    page = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Discussion
-        fields = ['name', 'description', 'is_active','page']
+        fields = ['name', 'description', 'is_active', 'page']
+
