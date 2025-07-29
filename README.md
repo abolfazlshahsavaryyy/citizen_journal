@@ -80,7 +80,7 @@ An intelligent microservice built with **FastAPI** that detects the authenticity
 
 Follow these steps to get the API service up and running locally:
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/abolfazlshahsavaryyy/citizen_journal.git
@@ -96,26 +96,20 @@ POSTGRES_USER=myuser
 POSTGRES_PASSWORD=mypassword
 ```
 
-### 3. Set up a Python virtual environment and install dependencies
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r backend/requirements.txt
-```
-
-### 4. Start Docker services (PostgreSQL and Fake News Detection API)
+### 3. Start All Services
 ```bash
 docker-compose up --build
+
 ```
 
-### 5. Run the Django backend server
+### 4. Apply Database Migrations
+```bash
+docker-compose exec django python manage.py migrate
 
-```bash
-cd backend
-python manage.py migrate      # Apply database migrations
-python manage.py runserver    # Launch the Django API server
 ```
-### 6. Access the API
-```bash
-http://127.0.0.1:8000/
-```
+
+### 5. Access the API
+
+    Django API: http://127.0.0.1:8000/
+
+    Fake News Detection API (FastAPI): http://127.0.0.1:8001/
