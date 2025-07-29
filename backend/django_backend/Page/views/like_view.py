@@ -5,10 +5,13 @@ from rest_framework import status
 from Page.serializer.like_serializer import *
 from Page.services.like_service import *
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.throttling import ScopedRateThrottle
 class NewsToggleLikeView(APIView):
     """
     POST endpoint to toggle like/unlike on a news item.
     """
+    throttle_scope = 'like_dislike_news'  # use the key from settings
+    throttle_classes = [ScopedRateThrottle]
     @swagger_auto_schema(
         request_body=NewsToggleLikeSerializer,
         responses={200: NewsToggleLikeSerializer}

@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from drf_yasg.utils import swagger_auto_schema
 from Page.services.page_service import *
-
+from rest_framework.throttling import ScopedRateThrottle
 class PageListCreateView(APIView):
     """
     GET: List all pages
@@ -24,6 +24,8 @@ class PageListCreateView(APIView):
 
     
     permission_classes = [IsAuthenticated]
+    throttle_scope = 'create_page'  # use the key from settings
+    throttle_classes = [ScopedRateThrottle]
     @swagger_auto_schema(
         request_body=PageCreateSerializer,
         responses={201: PageCreateSerializer}

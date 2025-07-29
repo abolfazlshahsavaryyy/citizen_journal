@@ -186,5 +186,29 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+    # Combine all throttle classes
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+
+    # Combine all throttle rates
+    'DEFAULT_THROTTLE_RATES': {
+        # Global rates
+        'anon': '50/day',
+        'user': '2000/day',
+
+        # Scoped rates
+        'post_news': '5/minute',
+        'read_news': '100/minute',
+        'like_dislike_news': '3000/hour',
+        'create_page': '2/hour',
+        'create_topic': '10/minute',
+        'ask_question': '5/minute',
+        'answer_question': '5/minute',
+    }
 }
+
 

@@ -10,12 +10,17 @@ from drf_yasg.utils import swagger_auto_schema
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from drf_yasg import openapi
 from Page.services.news_service import *
+from rest_framework.throttling import ScopedRateThrottle
 
 class NewsListCreateView(APIView):
     def get(self, request):
         news_list = News.objects.all()
         serializer = NewsReadSerializer(news_list, many=True)
         return Response(serializer.data)
+    
+
+    throttle_scope = 'post_news'  # use the key from settings
+    throttle_classes = [ScopedRateThrottle]
     @swagger_auto_schema(
         request_body=NewsCreateSerializer,
         responses={201: NewsCreateSerializer}

@@ -6,6 +6,8 @@ from drf_yasg.utils import swagger_auto_schema
 from Discussion.models.Topic import Topic
 from Discussion.Serializers.topic_serializer import *
 from Discussion.services.topic_service import *
+from rest_framework.throttling import ScopedRateThrottle
+
 class TopicListCreateView(APIView):
     """
     Handles:
@@ -17,6 +19,8 @@ class TopicListCreateView(APIView):
         topics = Topic.objects.all()
         serializer = TopicListSerializer(topics, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    throttle_scope = 'create_topic'  # use the key from settings
+    throttle_classes = [ScopedRateThrottle]
     @swagger_auto_schema(
         request_body=TopicCreateSerializer,
         responses={201: TopicCreateSerializer}

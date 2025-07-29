@@ -10,13 +10,17 @@ from Question.serilizers.answer_ser import (
     AnswerDetailSerializer,
     AnswerUpdateSerializer
 )
+from rest_framework.throttling import ScopedRateThrottle
+
 
 class AnswerListCreateView(APIView):
     def get(self, request):
         answers = Answer.objects.select_related('question').all()
         serializer = AnswerListSerializer(answers, many=True)
         return Response(serializer.data)
-
+    
+    throttle_scope = 'answer_question'  # use the key from settings
+    throttle_classes = [ScopedRateThrottle]
     @swagger_auto_schema(
         request_body=AnswerCreateSerializer,
         responses={201: AnswerCreateSerializer}
