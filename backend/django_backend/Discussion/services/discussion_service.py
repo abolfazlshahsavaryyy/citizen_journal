@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
 from Discussion.models.Discussion import Discussion
 from django.core.exceptions import ValidationError
+from Page.models.Page import Page
 def create_discussion(user, page_id, data):
     """
     Create a discussion for a page if not already exists and user owns the page.
@@ -53,3 +54,9 @@ def delete_discussion(user, discussion_id):
 
     discussion.delete()
     return True
+
+class DiscussionService:
+    @staticmethod
+    def get_user_discussions(user):
+        # Fetch discussions where the page belongs to the user
+        return Discussion.objects.select_related('page').filter(page__user=user)
