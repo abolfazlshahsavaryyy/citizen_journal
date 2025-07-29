@@ -8,5 +8,6 @@ urlpatterns = [
     path('topics/<int:pk>/', TopicDetailView.as_view(), name='topic-detail'),
     path('discussions/create/<int:page_pk>/', DiscussionCreateForPageView.as_view(), name='discussion-create-for-page'),
     path('discussions/<int:discussion_id>/topics/', GetTopicOfDiscussion.as_view(), name='discussion-topics'),
+    path('discussion/user',UserDiscussionListView.as_view(),name='user_discussion')
 
 ]
