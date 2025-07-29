@@ -99,3 +99,8 @@ class DiscussionCreateForPageView(APIView):
 
 
     
+class UserDiscussionListView(APIView):
+    def get(self, request):
+        discussions = DiscussionService.get_user_discussions(request.user)
+        serializer = DiscussionSerializer(discussions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
