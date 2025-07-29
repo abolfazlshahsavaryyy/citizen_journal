@@ -84,7 +84,7 @@ Follow these steps to get the API service up and running locally:
 
 ```bash
 git clone https://github.com/abolfazlshahsavaryyy/citizen_journal.git
-cd citizen-journal
+cd citizen_journal/
 ```
 
 
