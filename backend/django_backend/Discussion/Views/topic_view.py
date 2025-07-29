@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from Discussion.models.Topic import Topic
 from Discussion.Serializers.topic_serializer import *
-
+from Discussion.services.topic_service import *
 class TopicListCreateView(APIView):
     """
     Handles:
@@ -24,21 +24,17 @@ class TopicListCreateView(APIView):
     def post(self, request):
         serializer = TopicCreateSerializer(data=request.data)
         if serializer.is_valid():
-            discussion_id = serializer.validated_data['discussion'].id
-
             try:
-                discussion = Discussion.objects.select_related('page').get(id=discussion_id)
-            except Discussion.DoesNotExist:
-                return Response({'detail': 'Discussion not found.'}, status=status.HTTP_404_NOT_FOUND)
-
-            if discussion.page.user != request.user:
-                return Response({'detail': 'You do not have permission to add a topic to this discussion.'},
-                                status=status.HTTP_403_FORBIDDEN)
-
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                topic = TopicService.create_topic(serializer.validated_data, request.user)
+            except Exception as e:
+                
+                raise e  
+            
+            response_serializer = TopicCreateSerializer(topic)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TopicDetailView(APIView):
     """
@@ -61,26 +57,28 @@ class TopicDetailView(APIView):
     )
     def put(self, request, pk):
         topic = self.get_object(pk)
-
-        # Check if the current user owns the Page associated with this Topic
-        if topic.discussion.page.user != request.user:
-            return Response({'detail': 'You do not have permission to update this topic.'},
-                            status=status.HTTP_403_FORBIDDEN)
-
         serializer = TopicUpdateSerializer(topic, data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                updated_topic = TopicService.update_topic(topic, serializer.validated_data, request.user)
+            except Exception as e:
+                raise e  # DRF will convert PermissionDenied/NotFound automatically
+
+            response_serializer = TopicUpdateSerializer(updated_topic)
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
         topic = self.get_object(pk)
-        if(topic.discussion.page.user!=request.user):
-            return Response({'detail': 'You do not have permission to delete this topic.'},
-                            status=status.HTTP_403_FORBIDDEN)
+        topic_title=topic.title
+        id_topic=pk
+        try:
+            TopicService.delete_topic(topic, request.user)
+        except Exception as e:
+            raise e  # DRF handles PermissionDenied
 
-        topic.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data={'id':id_topic,'message':f'the topic with title {topic_title} has been deleted'},status=status.HTTP_204_NO_CONTENT)
 
 
 class GetTopicOfDiscussion(APIView):
@@ -97,4 +95,6 @@ class GetTopicOfDiscussion(APIView):
         # 3. Serialize and return
         serializer = TopicDetailSerializer(topics, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+
 
