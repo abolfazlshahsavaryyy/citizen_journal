@@ -1,5 +1,5 @@
 .env
 venv/
-backend/FakeNewsAI/Fake.csv
-backend/FakeNewsAI/True.csv
+backend/fastapi_backend/FakeNewsAI/Fake.csv
+backend/fastapi_backend/FakeNewsAI/True.csv
 backend/fastapi_backend/HateSpeech/HateSpeechDatasetBalanced.csv

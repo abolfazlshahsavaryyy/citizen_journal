@@ -11,3 +11,4 @@ django-cors-headers
 requests
 pytest
 Pillow
+tensorflow
