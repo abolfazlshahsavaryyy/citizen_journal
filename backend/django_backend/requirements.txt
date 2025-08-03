@@ -11,6 +11,5 @@ django-cors-headers
 requests
 pytest
 Pillow
-transformers
 pandas 
-tqdm
+celery
