@@ -39,7 +39,29 @@ services:
     restart: no
 
 
+
+  hate_speech_api:
+    build:
+      context: ./backend/fastapi_backend/HateSpeech/fast_api
+    container_name: hate_speech_api
+    ports:
+      - "8002:8000"  # Expose to host
+    restart: unless-stopped
     
+  
+
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: rabbitmq
+  #   ports:
+  #     - "5672:5672"       # AMQP (Celery uses this)
+  #     - "15672:15672"     # Web management UI
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: guest
+  #     RABBITMQ_DEFAULT_PASS: guest
+
+  
+
 
   django:
     build:
