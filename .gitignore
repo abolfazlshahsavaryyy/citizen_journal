@@ -6,3 +6,5 @@ backend/fastapi_backend/HateSpeech/HateSpeechDatasetBalanced.csv
 backend/fastapi_backend/HateSpeech/embedded_data.csv
 .vscode/settings.json
 .vscode
+__pycache__/
+*.py[cod]
