@@ -7,9 +7,6 @@ backend/fastapi_backend/HateSpeech/embedded_data.csv
 .vscode/settings.json
 .vscode
 __pycache__/
-<<<<<<< HEAD
-*.py[cod]
-=======
 *.py[cod]
 *.pyc
 *.cpython-312.pyc
@@ -31,4 +28,4 @@ venv/
 
 # System files
 .env
->>>>>>> 8158891f (feat: add comment create comminucation with hate speech service)
+
