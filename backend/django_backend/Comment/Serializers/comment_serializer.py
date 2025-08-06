@@ -6,7 +6,7 @@ from Comment.models import Comment
 class CommentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'news', 'content', 'created_at']
+        fields = ['id', 'news', 'content', 'created_at','hate_rate']
 
 
 # Detailed Serializer for retrieving a single comment by ID (GET by id)

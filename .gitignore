@@ -7,3 +7,23 @@ backend/fastapi_backend/HateSpeech/embedded_data.csv
 .vscode
 __pycache__/
 *.py[cod]
+*.pyc
+*.cpython-312.pyc
+backend/django_backend/Discussion/Views/__pycache__/topic_view.cpython-312.pyc
+backend/django_backend/Page/views/__pycache__/like_view.cpython-312.pyc
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+*.cpython-*.pyc
+
+# Virtual environment
+venv/
+
+# VSCode config
+.vscode/
+
+# Data files
+*.csv
+
+# System files
+.env
