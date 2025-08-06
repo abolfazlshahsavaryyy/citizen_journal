@@ -108,6 +108,7 @@ docker-compose exec django python manage.py migrate
 
 ```
 
+
 ### 5. Access the API
 
     Django API: http://127.0.0.1:8000/
