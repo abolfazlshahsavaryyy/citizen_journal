@@ -15,6 +15,7 @@ class Comment(models.Model):
         related_name='replies',         # Allows access like: comment.replies.all()
         help_text="Optional reference to a parent comment"
     )
+    hate_rate=models.FloatField(help_text='this show how hate speech is each comment')
 
     created_at = models.DateTimeField(
         auto_now_add=True,
