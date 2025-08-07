@@ -47,28 +47,32 @@ services:
     ports:
       - "8002:8000"  # Expose to host
     restart: unless-stopped
-    
-  
-  celery:
-    build: ./backend
-    container_name: celery_worker
-    command: celery -A django_backend worker -l info
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - web
-      - rabbitmq
-
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
     ports:
-      - "5672:5672"     # For Celery
-      - "15672:15672"   # RabbitMQ management UI
+      - "5672:5672"
+      - "15672:15672"  # for RabbitMQ web UI
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-  
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  celery:
+    build:
+      context: ./backend/django_backend
+      dockerfile: Dockerfile
+    command: celery -A config worker -l info
+    volumes:
+      - ./backend/django_backend:/app
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: db  # Add this if used in settings.py
+      POSTGRES_PORT: 5432  # Optional
+      DJANGO_SETTINGS_MODULE: config.settings  # if needed
 
 
   django:
