@@ -38,15 +38,15 @@ CitizenJournal is a modern, Twitter-inspired web API project that combines socia
 
 ## Modular Django Apps
 
-#### The project follows a modular Django architecture with several dedicated apps:
+### The project follows a modular Django architecture with several dedicated apps:
 
-    Page & News: Create pages and publish news within them.
+#### Page & News: Create pages and publish news within them.
 
-    Comment: Handles creation and moderation of comments, with hate speech scoring.
+#### Comment: Handles creation and moderation of comments, with hate speech scoring.
 
-    Discussion & Topic: Allows users to start discussions and organize them by topics.
+#### Discussion & Topic: Allows users to start discussions and organize them by topics.
 
-    Question & Answer: Enables Q&A functionality within discussions.
+#### Question & Answer: Enables Q&A functionality within discussions.
 
     Notification: Generates notifications asynchronously (e.g., when a news post is liked) using Celery and RabbitMQ.
 # How to Use the API
