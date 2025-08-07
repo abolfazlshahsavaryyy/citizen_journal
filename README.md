@@ -1,9 +1,9 @@
-📰 CitizenJournal
-A Twitter-like Web Application with Fake News and Hate Speech Detection
+# 📰 CitizenJournal
+## A Twitter-like Web Application with Fake News and Hate Speech Detection
 
 CitizenJournal is a modern, Twitter-inspired web API project that combines social interaction with powerful machine learning features.
 It is built using Django as the main backend framework and FastAPI for serving machine learning models. The application offers intelligent content moderation and social features such as pages, news, comments, discussions, Q&A, and notifications.
-⚙️ Tech Stack
+## ⚙️ Tech Stack
 
     Backend Framework: Django (main application)
 
@@ -15,10 +15,10 @@ It is built using Django as the main backend framework and FastAPI for serving m
 
     Asynchronous Tasks: Celery with RabbitMQ
 
-🧠 Machine Learning Features
+## 🧠 Machine Learning Features
 
 This project includes two machine learning services:
-🔍 Fake News Detection
+### 🔍 Fake News Detection
 
     Model: Logistic Regression
 
@@ -26,7 +26,7 @@ This project includes two machine learning services:
 
     Integration: Synchronous communication with the News model via FastAPI
 
-💬 Hate Speech Detection
+### 💬 Hate Speech Detection
 
     Model: Convolutional Neural Network (CNN)
 
@@ -34,34 +34,34 @@ This project includes two machine learning services:
 
     Integration: Synchronous communication with the Comment model via FastAPI
 
-🧱 Modular Django Apps
+### 🧱 Modular Django Apps
 
 The project is organized into multiple Django apps for better modularity and scalability:
-📄 Page & News
+### 📄 Page & News
 
     Create pages
 
     Publish news under each page
 
-💬 Comment
+### 💬 Comment
 
     Add and manage comments on news
 
     Score comments using the hate speech detection service
 
-🗣️ Discussion & Topic
+### 🗣️ Discussion & Topic
 
     Start and participate in discussions
 
     Organize conversations under various topics
 
-❓ Question & Answer
+### ❓ Question & Answer
 
     Ask and answer questions within discussions
 
     Community-style interaction
 
-🔔 Notification
+### 🔔 Notification
 
     Send real-time notifications (e.g., news likes)
 
