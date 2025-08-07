@@ -1,8 +1,9 @@
-# CitizenJournal - A Twitter-like Web Application with Fake News and Hate Speech Detection
+📰 CitizenJournal
+A Twitter-like Web Application with Fake News and Hate Speech Detection
 
-CitizenJournal is a modern, Twitter-inspired web API project that combines social interaction with powerful machine learning features. Built using Django as the main web framework and integrated with FastAPI for ML model serving, this application aims to provide a rich user experience with intelligent content moderation.
-
-## Tech Stack
+CitizenJournal is a modern, Twitter-inspired web API project that combines social interaction with powerful machine learning features.
+It is built using Django as the main backend framework and FastAPI for serving machine learning models. The application offers intelligent content moderation and social features such as pages, news, comments, discussions, Q&A, and notifications.
+⚙️ Tech Stack
 
     Backend Framework: Django (main application)
 
@@ -14,41 +15,59 @@ CitizenJournal is a modern, Twitter-inspired web API project that combines socia
 
     Asynchronous Tasks: Celery with RabbitMQ
 
-## Machine Learning Features
+🧠 Machine Learning Features
 
-#### This project includes two ML services:
+This project includes two machine learning services:
+🔍 Fake News Detection
 
-    Fake News Detection
+    Model: Logistic Regression
 
-        Model: Logistic Regression
+    Accuracy: 99.25% on test data
 
-        Accuracy: 99.25% on test data
+    Integration: Synchronous communication with the News model via FastAPI
 
-        Integrated with the News model (synchronous communication via FastAPI)
+💬 Hate Speech Detection
 
-    Hate Speech Detection
+    Model: Convolutional Neural Network (CNN)
 
-        Model: CNN (Convolutional Neural Network)
+    Accuracy: 81% on test data
 
-        Accuracy: 81% on test data
+    Integration: Synchronous communication with the Comment model via FastAPI
 
-        Integrated with the Comment model (synchronous communication via FastAPI)
+🧱 Modular Django Apps
+
+The project is organized into multiple Django apps for better modularity and scalability:
+📄 Page & News
+
+    Create pages
+
+    Publish news under each page
+
+💬 Comment
+
+    Add and manage comments on news
+
+    Score comments using the hate speech detection service
+
+🗣️ Discussion & Topic
+
+    Start and participate in discussions
+
+    Organize conversations under various topics
+
+❓ Question & Answer
+
+    Ask and answer questions within discussions
+
+    Community-style interaction
+
+🔔 Notification
+
+    Send real-time notifications (e.g., news likes)
+
+    Asynchronous task handling with Celery and RabbitMQ
 
 
-
-## Modular Django Apps
-
-### The project follows a modular Django architecture with several dedicated apps:
-
-#### Page & News: Create pages and publish news within them.
-
-#### Comment: Handles creation and moderation of comments, with hate speech scoring.
-
-#### Discussion & Topic: Allows users to start discussions and organize them by topics.
-
-#### Question & Answer: Enables Q&A functionality within discussions.
-
-    Notification: Generates notifications asynchronously (e.g., when a news post is liked) using Celery and RabbitMQ.
 # How to Use the API
 
 Follow these steps to get the API service up and running locally:
