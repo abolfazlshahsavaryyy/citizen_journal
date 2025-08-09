@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-pandas
-numpy
-scikit-learn
-textstat
-# other packages you need
