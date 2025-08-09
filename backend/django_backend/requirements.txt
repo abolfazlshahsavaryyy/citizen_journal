@@ -1,0 +1,15 @@
+
+djangorestframework
+drf-yasg
+djangorestframework-simplejwt
+pandas
+numpy
+scikit-learn
+textstat
+psycopg2-binary
+django-cors-headers
+requests
+pytest
+Pillow
+pandas 
+celery
