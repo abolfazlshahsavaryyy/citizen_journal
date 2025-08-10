@@ -1,13 +1,30 @@
-version: '3.9'
+#version: '3.9'
 
 services:
+  # db:
+  #   image: postgres:15
+  #   restart: no
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
   db:
     image: postgres:15
-    restart: no
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - ./backend/django_backend/.env
+    #environment:
+      # optional - already in env_file
+      # POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -17,8 +34,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-
 
 
 
@@ -47,6 +62,10 @@ services:
     ports:
       - "8002:8000"  # Expose to host
     restart: unless-stopped
+
+
+
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -56,42 +75,71 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
+  # celery:
+  #   build:
+  #     context: ./backend/django_backend
+  #     dockerfile: Dockerfile
+  #   command: celery -A config worker -l info
+  #   volumes:
+  #     - ./backend/django_backend:/app
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_HOST: db  # Add this if used in settings.py
+  #     POSTGRES_PORT: 5432  # Optional
+  #     DJANGO_SETTINGS_MODULE: config.settings  # if needed
+
   celery:
     build:
       context: ./backend/django_backend
       dockerfile: Dockerfile
-    command: celery -A config worker -l info
-    volumes:
-      - ./backend/django_backend:/app
+    env_file:
+      - ./backend/django_backend/.env
     depends_on:
       - db
       - rabbitmq
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: db  # Add this if used in settings.py
-      POSTGRES_PORT: 5432  # Optional
-      DJANGO_SETTINGS_MODULE: config.settings  # if needed
+    command: sh -c "sleep 5 && celery -A config worker -l info"
+    volumes:
+      - ./backend/django_backend:/app
 
-
+  # django:
+  #   build:
+  #     context: ./backend/django_backend
+  #     dockerfile: Dockerfile
+  #   command: python manage.py runserver 0.0.0.0:8000
+  #   volumes:
+  #     - ./backend/django_backend:/app
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   restart: no
+##############################################
   django:
     build:
       context: ./backend/django_backend
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - ./backend/django_backend/.env   # path to your .env (or project root .env)
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.local    # important: points to the right settings module
     volumes:
       - ./backend/django_backend:/app
     ports:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      - rabbitmq
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
     restart: no
-
 
 
 volumes:
