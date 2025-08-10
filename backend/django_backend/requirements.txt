@@ -13,3 +13,4 @@ pytest
 Pillow
 pandas 
 celery
+django-environ

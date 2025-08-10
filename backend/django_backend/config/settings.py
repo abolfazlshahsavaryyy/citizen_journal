@@ -29,26 +29,37 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
-INSTALLED_APPS = [
+# Core Django apps
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Page',
+]
+
+# Third-party apps
+THIRD_PARTY_APPS = [
     'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+    'corsheaders',
+]
+
+# Local (custom) apps
+LOCAL_APPS = [
+    'Page',
     'Comment',
     'Discussion',
-    'drf_yasg',
     'Question',
-    'rest_framework_simplejwt',
     'Account',
-    'Notification'
-    
+    'Notification',
 ]
-INSTALLED_APPS += ["corsheaders"]
+
+# Combine all apps
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
