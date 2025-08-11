@@ -15,6 +15,26 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# disable Django's automatic logging configuration if we manage it manually
+LOGGING_CONFIG = None   # <- this tells Django "I will configure logging myself"
+# (Django docs: setting LOGGING_CONFIG=None disables automatic config). :contentReference[oaicite:2]{index=2}
+
+# directory for logs
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+
+# Now import & run our configure function
+from ..interceptor import configure_logging
+
+configure_logging(
+    log_level=os.environ.get("LOG_LEVEL", "INFO"),
+    log_dir=LOG_DIR,
+    rotation="10 MB",        # rotate when file > 10MB
+    retention="30 days",     # keep 30 days of logs
+    compression="zip",       # compress rotated files
+    console=True,
+    backtrace=True,
+    diagnose=False,
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
