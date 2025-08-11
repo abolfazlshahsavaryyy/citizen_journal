@@ -18,7 +18,7 @@ __pycache__/
 *.cpython-*.pyc
 
 # Virtual environment
-venv/
+.venv/
 
 # VSCode config
 .vscode/
