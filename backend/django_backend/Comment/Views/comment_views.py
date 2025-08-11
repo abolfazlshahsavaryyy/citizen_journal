@@ -14,6 +14,14 @@ from drf_yasg.utils import swagger_auto_schema
 from Page.models.News import News
 from Comment.services.comment_service import *
 # API for listing and creating comments
+
+#import logging
+from uuid import uuid4
+from loguru import logger as log
+import logging
+
+std_logger = logging.getLogger("django.request")  # example stdlib logger
+
 class CommentListCreateAPIView(APIView):
 
     def get(self, request):
@@ -25,6 +33,9 @@ class CommentListCreateAPIView(APIView):
         responses={200: CommentCreateSerializer}
     )
     def post(self, request):
+        
+
+
         serializer = CommentCreateSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -37,12 +48,15 @@ class CommentListCreateAPIView(APIView):
             news=serializer.validated_data['news'],
             reply=serializer.validated_data.get('reply')
             )
+            log.info('comment added to db')
         except ValidationError as e:
+            log.error(e)
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            
         
         # Return serialized response
         response_serializer = CommentCreateSerializer(comment)
+        log.success('comment created successfully')
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
 
