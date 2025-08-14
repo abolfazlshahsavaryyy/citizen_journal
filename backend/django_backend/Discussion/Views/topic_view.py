@@ -70,7 +70,7 @@ class TopicDetailView(APIView):
                 raise e  # DRF will convert PermissionDenied/NotFound automatically
 
             response_serializer = TopicUpdateSerializer(updated_topic)
-            log.info('topic with id {pk} updated')
+            log.info(f'topic with id {pk} updated')
             return Response(response_serializer.data, status=status.HTTP_200_OK)
         log.warning(f'invalid data for update topic {serializer.errors}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
