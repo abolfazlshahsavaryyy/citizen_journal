@@ -6,7 +6,7 @@ from rest_framework import status
 from Account.serializers.user_serializer import RegisterSerializer
 from Account.services.user_service import register_user
 from drf_yasg.utils import swagger_auto_schema
-
+from loguru import logger as log
 
 class RegisterView(APIView):
     authentication_classes = []  # No auth needed
@@ -24,6 +24,7 @@ class RegisterView(APIView):
                 email=serializer.validated_data["email"],
                 password=serializer.validated_data["password"]
             )
+            log.success(f'user with username {user.username} created succesfully')
             return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

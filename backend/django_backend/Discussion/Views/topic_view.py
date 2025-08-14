@@ -7,7 +7,7 @@ from Discussion.models.Topic import Topic
 from Discussion.Serializers.topic_serializer import *
 from Discussion.services.topic_service import *
 from rest_framework.throttling import ScopedRateThrottle
-
+from loguru import logger as log
 class TopicListCreateView(APIView):
     """
     Handles:
@@ -31,12 +31,13 @@ class TopicListCreateView(APIView):
             try:
                 topic = TopicService.create_topic(serializer.validated_data, request.user)
             except Exception as e:
-                
+                log.error(e[0:100])
                 raise e  
             
             response_serializer = TopicCreateSerializer(topic)
+            log.info(f'topic create with id {topic.id}')
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
-
+        log.warning(f'invalid topic data {serializer.errors}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -69,8 +70,9 @@ class TopicDetailView(APIView):
                 raise e  # DRF will convert PermissionDenied/NotFound automatically
 
             response_serializer = TopicUpdateSerializer(updated_topic)
+            log.info('topic with id {pk} updated')
             return Response(response_serializer.data, status=status.HTTP_200_OK)
-
+        log.warning(f'invalid data for update topic {serializer.errors}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
@@ -81,7 +83,7 @@ class TopicDetailView(APIView):
             TopicService.delete_topic(topic, request.user)
         except Exception as e:
             raise e  # DRF handles PermissionDenied
-
+        log.info(f"topic deleted with id {pk}")
         return Response(data={'id':id_topic,'message':f'the topic with title {topic_title} has been deleted'},status=status.HTTP_204_NO_CONTENT)
 
 

@@ -1,8 +1,18 @@
 from django.apps import AppConfig
-
+from pathlib import Path
 
 class AccountConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'Account'
     def ready(self):
         import Account.signals
+        from config.interceptor import configure_logging
+
+        project_root = Path(__file__).resolve().parents[2]
+        configure_logging(
+            log_level="INFO",
+            log_dir=str(project_root / "logs"),
+            rotation="10 MB",
+            retention="30 days",
+            compression="zip",
+        )

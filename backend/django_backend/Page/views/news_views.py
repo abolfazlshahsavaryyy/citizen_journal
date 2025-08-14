@@ -11,7 +11,7 @@ from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from drf_yasg import openapi
 from Page.services.news_service import *
 from rest_framework.throttling import ScopedRateThrottle
-
+from loguru import logger
 class NewsListCreateView(APIView):
     def get(self, request):
         news_list = News.objects.all()
@@ -33,6 +33,7 @@ class NewsListCreateView(APIView):
 
             # ✅ Prevent posting to someone else's page
             if page.user != request.user:
+                
                 return Response(
                     {'error': 'You are not the owner of this page.'},
                     status=status.HTTP_403_FORBIDDEN
@@ -40,8 +41,10 @@ class NewsListCreateView(APIView):
 
             news = NewsService.create_news(serializer.validated_data)
             read_serializer = NewsReadSerializer(news)
+            logger.info(f'new created with id {news.id}')
             return Response(read_serializer.data, status=status.HTTP_201_CREATED)
 
+        logger.warning(f'invalid data for create news {serializer.errors}')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -71,8 +74,9 @@ class NewsDetailView(APIView):
         if serializer.is_valid():
             updated_news = NewsService.update_news(news, serializer.validated_data)
             read_serializer = NewsReadSerializer(updated_news)
+            logger.info(f'news updated with id {pk}')
             return Response(read_serializer.data)
-
+        logger.warning(f'invalid data in update news')
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -82,6 +86,7 @@ class NewsDetailView(APIView):
     
             # ✅ Ownership check
             if news.page.user != request.user:
+                
                 return Response(
                     {'error': 'You are not allowed to delete this news post.'},
                     status=status.HTTP_403_FORBIDDEN
@@ -89,12 +94,14 @@ class NewsDetailView(APIView):
     
             # Use service for deletion
             NewsService.delete_news(news)
-    
+            logger.info(f'news deleted with id {pk}')
             return Response(status=status.HTTP_204_NO_CONTENT)
     
         except News.DoesNotExist:
+            
             return Response({"error": "News post not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            logger.error(e)
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 

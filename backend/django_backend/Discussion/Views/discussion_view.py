@@ -8,7 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from Page.models.Page import Page
 from Discussion.services.discussion_service import *
-
+from loguru import logger as log
 class DiscussionListCreateView(APIView):
     """
     Handles GET (list all discussions) and POST (create new discussion)
@@ -52,7 +52,9 @@ class DiscussionDetailView(APIView):
         except PermissionDenied as e:
             return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
 
+        log.success(f'discussion with Id {pk} has been updated')
         return Response(
+            
             DiscussionUpdateSerializer(updated_discussion).data,
             status=status.HTTP_200_OK
         )
@@ -62,7 +64,7 @@ class DiscussionDetailView(APIView):
             delete_discussion(user=request.user, discussion_id=pk)
         except PermissionDenied as e:
             return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
-
+        log.info(f'discussion with id {pk} has been deleted')
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 
@@ -91,10 +93,12 @@ class DiscussionCreateForPageView(APIView):
                 data=serializer.validated_data
             )
         except PermissionDenied as e:
+            log.error(e[0:100])
             return Response({'detail': str(e)}, status=status.HTTP_403_FORBIDDEN)
         except ValidationError as e:
+            log.error(e[0:100])
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+        log.info(f'dicussion created for page with id {page_pk}')
         return Response(DiscussionCreateSerializer(discussion).data, status=status.HTTP_201_CREATED)
 
 

@@ -20,7 +20,7 @@ from uuid import uuid4
 from loguru import logger as log
 import logging
 
-std_logger = logging.getLogger("django.request")  # example stdlib logger
+#std_logger = logging.getLogger("django.request")  # example stdlib logger
 
 class CommentListCreateAPIView(APIView):
 

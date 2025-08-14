@@ -10,6 +10,8 @@ from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from drf_yasg.utils import swagger_auto_schema
 from Page.services.page_service import *
 from rest_framework.throttling import ScopedRateThrottle
+from loguru import logger
+
 class PageListCreateView(APIView):
     """
     GET: List all pages
@@ -35,8 +37,10 @@ class PageListCreateView(APIView):
         if serializer.is_valid():
             page = create_page(request.user, serializer.validated_data)
             response_serializer = PageCreateSerializer(page)
+            logger.info(f'page created with data {str(response_serializer.data)}')
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         else:
+            logger.warning(f'username {request.user.username} sned invalid data for create page')
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -82,14 +86,17 @@ class PageDetailView(APIView):
             if serializer.is_valid():
                 updated_page = update_page(page, serializer.validated_data)
                 response_serializer = PostUpdateSerializer(updated_page)
+                logger.info(f'page with id {pk} updated')
                 return Response(response_serializer.data, status=status.HTTP_200_OK)
             else:
+                logger.warning(f'invalid data for update page with id {pk}')
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Page.DoesNotExist:
             return Response({'error': 'Page not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
+            logger.error(str(e))
             return Response({'error': 'Request not in correct format', 'details': str(e)},
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -98,6 +105,7 @@ class PageDetailView(APIView):
             page = self._get_page_by_pk(pk)
 
             if page.user != request.user:
+                logger.info(f'page with id {pk} has been deleted')
                 return Response(
                     {"error": "You do not have permission to delete this page."},
                     status=status.HTTP_403_FORBIDDEN

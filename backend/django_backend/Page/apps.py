@@ -1,9 +1,19 @@
 from django.apps import AppConfig
-
+from pathlib import Path
 
 class PageConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'Page'
     def ready(self):
         import Page.signals
+        from config.interceptor import configure_logging
+
+        project_root = Path(__file__).resolve().parents[2]
+        configure_logging(
+            log_level="INFO",
+            log_dir=str(project_root / "logs"),
+            rotation="10 MB",
+            retention="30 days",
+            compression="zip",
+        )
 
