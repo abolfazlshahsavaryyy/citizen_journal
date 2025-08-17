@@ -4,6 +4,10 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import path
+from strawberry.django.views import GraphQLView
+from Page.graphql.schema import schema
+from django.views.decorators.csrf import csrf_exempt
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -30,7 +34,7 @@ urlpatterns = [
     path('account/', include('Account.urls')),
     path('notification/', include('Notification.urls')),
     
-
+    path("graphql/", csrf_exempt(GraphQLView.as_view(schema=schema))),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
