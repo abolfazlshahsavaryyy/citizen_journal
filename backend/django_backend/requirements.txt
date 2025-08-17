@@ -15,3 +15,4 @@ pandas
 celery
 django-environ
 loguru
+strawberry-graphql-django
