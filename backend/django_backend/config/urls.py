@@ -5,9 +5,10 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.urls import path
-from strawberry.django.views import GraphQLView
 from Page.graphql.schema import schema
 from django.views.decorators.csrf import csrf_exempt
+
+from graphene_django.views import GraphQLView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -21,21 +22,29 @@ schema_view = get_schema_view(
    public=True,
    permission_classes=(permissions.AllowAny,),  # FIXED HERE
 )
+admin_url=[path('admin/', admin.site.urls)]
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
+authentication_url=[
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    
+    ]
+
+app_url=[
     path('pages/', include('Page.urls')),
     path('comment/', include('Comment.urls')),
     path('discussion/', include("Discussion.urls")),
     path('question/', include("Question.urls")),
     path('account/', include('Account.urls')),
     path('notification/', include('Notification.urls')),
-    
-    path("graphql/", csrf_exempt(GraphQLView.as_view(schema=schema))),
+]
+graphql_url=[
+  
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+]
+swagger_url=[
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 ]
+
+urlpatterns = admin_url+authentication_url+app_url+graphql_url+swagger_url
