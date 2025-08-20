@@ -1,4 +1,3 @@
-
 djangorestframework
 drf-yasg
 djangorestframework-simplejwt
@@ -11,8 +10,8 @@ django-cors-headers
 requests
 pytest
 Pillow
-pandas 
 celery
 django-environ
 loguru
-strawberry-graphql-django
+graphene-django
+django-graphql-jwt
