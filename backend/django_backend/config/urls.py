@@ -7,8 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.urls import path
 from Page.graphql.schema import schema
 from django.views.decorators.csrf import csrf_exempt
-
-from graphene_django.views import GraphQLView
+from Page.graphql.view import DRFAwareGraphQLView
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -39,7 +38,7 @@ app_url=[
 ]
 graphql_url=[
   
-    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path("graphql/", csrf_exempt(DRFAwareGraphQLView.as_view(graphiql=True))),
 ]
 swagger_url=[
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
