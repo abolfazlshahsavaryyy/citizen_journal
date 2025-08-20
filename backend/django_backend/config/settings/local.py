@@ -65,6 +65,7 @@ THIRD_PARTY_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
     'corsheaders',
+    'graphene_django'
 ]
 
 # Local (custom) apps
@@ -80,20 +81,19 @@ LOCAL_APPS = [
 # Combine all apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # keep this at the top
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-
-    # Insert your custom logging middleware here
+    "config.middleware.cors.CustomCorsMiddleware",
+    "config.middleware.security.CustomSecurityMiddleware",
+    "config.middleware.session.CustomSessionMiddleware",
+    "config.middleware.common.CustomCommonMiddleware",
+    "config.middleware.csrf.CustomCsrfMiddleware",
+    "config.middleware.auth.CustomAuthMiddleware",
+    #"config.middleware.first_request.FirstAuthRequestMiddleware",
     "config.middleware.request_logging.RequestLoggingMiddleware",
-
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "config.middleware.messages.CustomMessageMiddleware",
+    "config.middleware.clickjacking.CustomClickjackingMiddleware",
 ]
 
+ 
 
 CORS_ALLOW_ALL_ORIGINS = True
 ROOT_URLCONF = 'config.urls'
@@ -101,7 +101,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend', 'templates')],  
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -247,9 +247,31 @@ REST_FRAMEWORK = {
         'answer_question': '5/minute',
     }
 }
+from datetime import timedelta
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Expect: Authorization: Bearer <token>
+    "ROTATE_REFRESH_TOKENS": True,     # optional: rotate on refresh
+    "BLACKLIST_AFTER_ROTATION": True,  # optional: requires blacklist app
+    # "ALGORITHM": "HS256",
+    # "SIGNING_KEY": env("JWT_SIGNING_KEY", default=SECRET_KEY),
+}
 # Celery settings
 CELERY_BROKER_URL = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+GRAPHENE = {
+    "SCHEMA": "Page.graphql.schema.schema",
+    "MIDDLEWARE": [
+        
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
