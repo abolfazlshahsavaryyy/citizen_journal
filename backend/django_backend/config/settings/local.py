@@ -247,17 +247,39 @@ REST_FRAMEWORK = {
         'answer_question': '5/minute',
     }
 }
+from django.conf import settings
+from datetime import timedelta
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # access token valid for 15 min
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # refresh token valid for 7 days
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ALGORITHM': 'HS256',             # HMAC SHA-256
+    'SIGNING_KEY': settings.SECRET_KEY, # <- same key as GraphQL JWT
+    'VERIFYING_KEY': None,             # used for asymmetric algorithms
+
+    'AUTH_HEADER_TYPES': ('Bearer',),  # header: "Authorization: Bearer <token>"
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'JTI_CLAIM': 'jti',
+}
+# settings.py
 from datetime import timedelta
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "AUTH_HEADER_TYPES": ("Bearer",),  # Expect: Authorization: Bearer <token>
-    "ROTATE_REFRESH_TOKENS": True,     # optional: rotate on refresh
-    "BLACKLIST_AFTER_ROTATION": True,  # optional: requires blacklist app
-    # "ALGORITHM": "HS256",
-    # "SIGNING_KEY": env("JWT_SIGNING_KEY", default=SECRET_KEY),
+
+GRAPHQL_JWT = {
+    "JWT_ALGORITHM": "HS256",
+    "JWT_SECRET_KEY": SECRET_KEY,
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_GET_USER_HANDLER": "config.utils.get_user_from_drf_token",
 }
+
+
 # Celery settings
 CELERY_BROKER_URL = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ['json']
@@ -265,13 +287,11 @@ CELERY_TASK_SERIALIZER = 'json'
 
 GRAPHENE = {
     "SCHEMA": "Page.graphql.schema.schema",
-    "MIDDLEWARE": [
-        
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ],
+    "MIDDLEWARE": [],  # remove graphql_jwt middleware
 }
 
 AUTHENTICATION_BACKENDS = [
-    'graphql_jwt.backends.JSONWebTokenBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',  # only keep Django’s default
 ]
+
+# delete GRAPHQL_JWT config block, it’s unused now
