@@ -94,6 +94,8 @@ The project is organized into multiple Django apps for better modularity and sca
 
 ### Containerization:
     All services are containerized with Docker and orchestrated using Docker Compose for easy deployment and scalability.
+### signal
+    Configure a signal decorator to automatically create user information, user pages, and discussion threads whenever a new user is created. 
 # How to Use the API
 
 Follow these steps to get the API service up and running locally:
