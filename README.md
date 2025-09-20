@@ -57,19 +57,19 @@ The project is organized into multiple Django apps for better modularity and sca
 
     self referenc relation as reply on Comment
 
-### 🗣️ Discussion & Topic
+### Discussion & Topic
 
     Start and participate in discussions
 
     Organize conversations under various topics
 
-### ❓ Question & Answer
+### Question & Answer
 
     Ask and answer questions within discussions
 
     Community-style interaction
 
-### 🔔 Notification
+### Notification
 
     Send real-time notifications (e.g., news likes)
 
