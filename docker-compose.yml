@@ -141,6 +141,13 @@ services:
     command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
     restart: no
 
+  summarizer:
+    build:
+      context: ./backend/fastapi_backend/SummarizerService
+      dockerfile: Dockerfile
+    container_name: summarizer_service
+    ports:
+      - "8003:8003"
 
 volumes:
   pgdata:
