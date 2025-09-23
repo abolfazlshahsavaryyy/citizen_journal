@@ -280,10 +280,17 @@ GRAPHQL_JWT = {
 }
 
 
-# Celery settings
-CELERY_BROKER_URL = CELERY_BROKER_URL
+import os
+from django.conf import settings
+
+# Celery settings (pulled from .env via django-environ)
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672//")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 
 GRAPHENE = {
     "SCHEMA": "Page.graphql.schema.schema",
