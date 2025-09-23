@@ -22,4 +22,7 @@ urlpatterns = [
     path('predict-news/<int:news_id>/', PredictNewsView.as_view(), name='predict-news'),
     path('api/news/search/', NewsSearchView.as_view(), name='news-search'),
 
+    path("news/<int:news_id>/summarize/", SummarizeNewsView.as_view(), name="summarize-news"),
+    path("news/<int:news_id>/summary/", GetSummaryView.as_view(), name="get-summary"),
+
 ]

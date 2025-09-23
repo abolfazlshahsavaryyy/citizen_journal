@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline
 
-# Load summarizer model once at startup
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+# Load a lighter summarizer model once at startup
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 app = FastAPI()
 
@@ -15,7 +15,7 @@ class TextInput(BaseModel):
 def summarize_text(input_data: TextInput):
     result = summarizer(
         input_data.text,
-        max_length=130,  # you can tune these
+        max_length=130,   # can tune for lighter/faster inference
         min_length=30,
         do_sample=False
     )

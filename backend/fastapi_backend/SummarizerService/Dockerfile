@@ -9,8 +9,7 @@ WORKDIR /app
 # Copy requirements first
 COPY fast_api/requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip --default-timeout=100 install --no-cache-dir -r requirements.txt
 # Copy app code
 COPY fast_api .
 
@@ -18,4 +17,8 @@ COPY fast_api .
 EXPOSE 8003
 
 # Run app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8003", "--reload"]
+
+
+
+

@@ -12,6 +12,12 @@ from drf_yasg import openapi
 from Page.services.news_service import *
 from rest_framework.throttling import ScopedRateThrottle
 from loguru import logger
+from django.http import JsonResponse
+from django.views import View
+import redis
+from Page.tasks import summarize_news_task
+
+
 class NewsListCreateView(APIView):
     def get(self, request):
         news_list = News.objects.all()
@@ -207,3 +213,35 @@ class NewsSearchView(APIView):
 
         serializer = NewsReadSerializer(results, many=True)
         return Response(serializer.data)
+    
+
+
+
+##################################################################################################
+##################################################################################################
+#######################    summarizing news view                     #############################
+##################################################################################################
+##################################################################################################
+
+
+
+from Page.tasks import summarize_news_task
+
+redis_client = redis.Redis(host="redis", port=6379, db=0, decode_responses=True)
+
+class SummarizeNewsView(APIView):
+    def post(self, request, news_id):
+        logger.info(f'get the news by id')
+        news = News.objects.get(id=news_id)
+        logger.info("run the task in celery")
+        task = summarize_news_task.delay(news_id,news.text)
+        return Response({"news_id": news_id, "task_id": task.id, "status": "queued"})
+
+
+class GetSummaryView(APIView):
+    def get(self, request, news_id):
+        summary = redis_client.get(f"news:{news_id}:summary")
+        if summary:
+            return Response({"news_id": news_id, "summary": summary})
+        return Response({"news_id": news_id, "summary": None, "status": "processing"})
+

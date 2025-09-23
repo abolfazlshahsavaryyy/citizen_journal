@@ -102,9 +102,12 @@ services:
     depends_on:
       - db
       - rabbitmq
+      - redis
+      - summarizer
     command: sh -c "sleep 5 && celery -A config worker -l info"
     volumes:
       - ./backend/django_backend:/app
+
 
   # django:
   #   build:
@@ -128,9 +131,9 @@ services:
       context: ./backend/django_backend
       dockerfile: Dockerfile
     env_file:
-      - ./backend/django_backend/.env   # path to your .env (or project root .env)
+      - ./backend/django_backend/.env
     environment:
-      DJANGO_SETTINGS_MODULE: config.settings.local    # important: points to the right settings module
+      DJANGO_SETTINGS_MODULE: config.settings.local
     volumes:
       - ./backend/django_backend:/app
     ports:
@@ -138,6 +141,8 @@ services:
     depends_on:
       - db
       - rabbitmq
+      - redis
+      - summarizer
     command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
     restart: no
 
@@ -148,6 +153,13 @@ services:
     container_name: summarizer_service
     ports:
       - "8003:8003"
+
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+
+
 
 volumes:
   pgdata:
