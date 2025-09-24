@@ -5,40 +5,44 @@ CitizenJournal is a modern, Twitter-inspired web API project that combines socia
 It is built using Django as the main backend framework and FastAPI for serving machine learning models. The application offers intelligent content moderation and social features such as pages, news, comments, discussions, Q&A, and notifications.
 ## Tech Stack
 
-    Backend Framework: Django (main application)
+Backend Framework: Django (main application)
 
-    ML API Services: FastAPI
+ML API Services: FastAPI
 
-    Database: PostgreSQL
+Database: PostgreSQL
 
-    Authentication: JWT (JSON Web Token)
+Authentication: JWT (JSON Web Token)
 
-    Asynchronous Tasks: Celery with RabbitMQ
+Asynchronous Tasks: Celery with RabbitMQ
 
 ## Machine Learning Features
 
-This project includes two machine learning services:
+This project includes three machine learning services:
 ### Fake News Detection
 
-    Model: Logistic Regression
+Model: Logistic Regression
 
-    Accuracy: 99.25% on test data
+Accuracy: 99.25% on test data
 
-    Integration: Synchronous communication with the News model via FastAPI
+Integration: Synchronous communication with the News model via FastAPI
 
 ### Hate Speech Detection
 
-    Model: Convolutional Neural Network (CNN)
+Model: Convolutional Neural Network (CNN)
 
-    Accuracy: 86% on test data
+Accuracy: 86% on test data
 
-    Integration: Synchronous communication with the Comment model via FastAPI
+Integration: Synchronous communication with the Comment model via FastAPI
 
 ### Summarizing Model: sshleifer/distilbart-cnn-12-6
-    In this service, we configured a lightweight summarization model — sshleifer/distilbart-cnn-12-6
-    model url : https://huggingface.co/sshleifer/distilbart-cnn-12-6
-    its a Lightweight,Faster inference,Lower resource usage and Hight accurate model
-    its used to summaried news text 
+
+In this service, we configured a lightweight summarization model — sshleifer/distilbart-cnn-12-6
+
+model url : https://huggingface.co/sshleifer/distilbart-cnn-12-6
+
+its a Lightweight,Faster inference,Lower resource usage and Hight accurate model
+
+its used to summaried news text 
 
 ## Modular Django Apps
 
@@ -180,6 +184,7 @@ Ports: 8002:8000
 A FastAPI microservice for text summarization.
 
 Uses a lightweight transformer model (sshleifer/distilbart-cnn-12-6)
+
 Ports: 8003:8003
 
 ### RabbitMQ (rabbitmq)
