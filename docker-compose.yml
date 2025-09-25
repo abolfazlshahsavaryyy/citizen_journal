@@ -161,5 +161,51 @@ services:
 
 
 
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+    - sql_data:/var/opt/mssql
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/1433'"]
+      interval: 10s
+      retries: 10
+      timeout: 5s
+
+
+
+
+  sharenewsgrpc:
+    build:
+      context: ./backend/AspNetCoreServices/ShareNewsGrpc
+      dockerfile: Dockerfile
+    container_name: sharenewsgrpc
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - DOTNET_HOST_PATH=/usr/share/dotnet/dotnet
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ShareNewsDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
+
 volumes:
   pgdata:
+  sql_data:
