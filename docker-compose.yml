@@ -170,13 +170,37 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+    volumes:
+    - sql_data:/var/opt/mssql
     networks:
       - mynetwork
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/1433'"]
       interval: 10s
-      timeout: 10s
-      retries: 5
+      retries: 10
+      timeout: 5s
+
+
+
+
+  sharenewsgrpc:
+    build:
+      context: ./backend/AspNetCoreServices/ShareNewsGrpc
+      dockerfile: Dockerfile
+    container_name: sharenewsgrpc
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - DOTNET_HOST_PATH=/usr/share/dotnet/dotnet
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ShareNewsDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
@@ -184,3 +208,4 @@ networks:
 
 volumes:
   pgdata:
+  sql_data:
