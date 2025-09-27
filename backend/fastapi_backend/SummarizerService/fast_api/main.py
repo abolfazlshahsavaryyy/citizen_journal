@@ -4,8 +4,9 @@ from pydantic import BaseModel
 from transformers import pipeline
 
 # Load a lighter summarizer model once at startup
-summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-
+# comment following code to not download it after each build
+# summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+summarizer=None
 app = FastAPI()
 
 class TextInput(BaseModel):
