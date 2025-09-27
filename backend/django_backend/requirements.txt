@@ -16,3 +16,5 @@ loguru
 graphene-django
 django-graphql-jwt
 redis
+grpcio 
+grpcio-tools
