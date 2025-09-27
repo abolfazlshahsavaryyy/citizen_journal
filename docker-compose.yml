@@ -27,6 +27,8 @@ services:
       # POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
+    networks:
+      - mynetwork
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -47,6 +49,8 @@ services:
       - ./backend/fastapi_backend/FakeNewsAI/fastapi_app:/app
     depends_on:
       - db
+    networks:
+      - mynetwork
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -61,6 +65,8 @@ services:
     container_name: hate_speech_api
     ports:
       - "8002:8000"  # Expose to host
+    networks:
+      - mynetwork
     restart: unless-stopped
 
 
@@ -71,6 +77,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"  # for RabbitMQ web UI
+    networks:
+      - mynetwork
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -103,7 +111,9 @@ services:
       - db
       - rabbitmq
       - redis
-      - summarizer
+      #- summarizer
+    networks:
+      - mynetwork
     command: sh -c "sleep 5 && celery -A config worker -l info"
     volumes:
       - ./backend/django_backend:/app
@@ -142,22 +152,30 @@ services:
       - db
       - rabbitmq
       - redis
-      - summarizer
+      #- summarizer
+      - sharenewsgrpc
+    networks:
+      - mynetwork
     command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
     restart: no
 
-  summarizer:
-    build:
-      context: ./backend/fastapi_backend/SummarizerService
-      dockerfile: Dockerfile
-    container_name: summarizer_service
-    ports:
-      - "8003:8003"
+  
+  # summarizer:
+  #   build:
+  #     context: ./backend/fastapi_backend/SummarizerService
+  #     dockerfile: Dockerfile
+  #   container_name: summarizer_service
+  #   ports:
+  #     - "8003:8003"
+  #   networks:
+  #     - mynetwork
 
   redis:
     image: redis:6
     ports:
       - "6379:6379"
+    networks:
+      - mynetwork
 
 
 
