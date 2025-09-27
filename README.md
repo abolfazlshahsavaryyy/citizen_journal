@@ -21,6 +21,7 @@ It is built using Django as the main backend framework and FastAPI for serving m
       - [Hate Speech Detection Model](#hate-speech-detection-model)
       - [Summarization Model](#summarization-model)
   - [ASP.NET Core](#aspnet-core)
+    - [Entity Framework](#entity-framework) 
   - [API Types](#api-types)
     - [REST API](#rest-api)
     - [GraphQL API](#graphql-api)
@@ -121,7 +122,8 @@ Purpose: Provides short, digestible summaries of news articles for users.
 
 ## ASP.NET Core:
 Dedicated backend service exposing gRPC APIs for sharing news between users across different platforms. Django acts as a gRPC client to consume this service.
-
+### Entity Framework
+the ORM for integration with sql server database  
 ## API Types:
 
 ### REST API
