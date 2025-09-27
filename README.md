@@ -3,213 +3,99 @@
 
 CitizenJournal is a modern, Twitter-inspired web API project that combines social interaction with powerful machine learning features.
 It is built using Django as the main backend framework and FastAPI for serving machine learning models. The application offers intelligent content moderation and social features such as pages, news, comments, discussions, Q&A, and notifications.
-## Tech Stack
 
-Backend Framework: Django (main application)
+## Table of Contents## Table of Contents
+- [CitizenJournal](#citizenjournal)
+- [Description](#description)
+  - [Django](#django)
+  - [FastAPI](#fastapi)
+  - [ASP.NET Core](#aspnet-core)
+  - [API Types](#api-types)
+    - [REST API](#rest-api)
+    - [GraphQL API](#graphql-api)
+    - [gRPC API](#grpc-api)
+  - [Asynchronous Communication](#asynchronous-communication)
+    - [Celery](#celery)
+    - [RabbitMQ](#rabbitmq)
+    - [Redis](#redis)
+  - [Database Layer](#database-layer)
+    - [PostgreSQL](#postgresql)
+    - [SQL Server](#sql-server)
+  - [Containerization](#containerization)
+  - [Other Features](#other-features)
+    - [Logging with Loguru](#logging-with-loguru)
+    - [Request Throttling](#request-throttling)
+    - [JWT Authentication](#jwt-authentication)
+- [How to Use the API](#how-to-use-the-api)
+  - [Linux User](#linux-user)
+    - [1. Clone the Repository](#1-clone-the-repository)
+    - [2. Create and Configure the .env File](#2-create-and-configure-the-env-file)
+    - [3. Start All Services](#3-start-all-services)
+    - [4. Apply Database Migrations](#4-apply-database-migrations)
+    - [5. Access the API](#5-access-the-api)
 
-ML API Services: FastAPI
 
-Database: PostgreSQL
 
-Authentication: JWT (JSON Web Token)
+# Description
+This project is a modular, multi-service backend platform for managing news, user interactions, and machine learning-powered content analysis. It leverages Django, FastAPI, and ASP.NET Core to provide robust API services. Key architectural highlights:
 
-Asynchronous Tasks: Celery with RabbitMQ
+## Django:
+Main backend framework for user management, news, comments, discussions, and GraphQL-based personalized news recommendations.
 
-## Machine Learning Features
+## FastAPI:
+Microservices for machine learning features like fake news detection, hate speech detection, and summarization.
 
-This project includes three machine learning services:
-### Fake News Detection
+## ASP.NET Core:
+Dedicated backend service exposing gRPC APIs for sharing news between users across different platforms. Django acts as a gRPC client to consume this service.
 
-Model: Logistic Regression
+## API Types:
 
-Accuracy: 99.25% on test data
+### REST API
+(Django + FastAPI) for standard CRUD operations
 
-Integration: Synchronous communication with the News model via FastAPI
+### GraphQL API
+(Django) for personalized news queries
 
-### Hate Speech Detection
+### gRPC API
+(ASP.NET) for high-performance inter-service communication
 
-Model: Convolutional Neural Network (CNN)
+## Asynchronous Communication
 
-Accuracy: 86% on test data
+### Celery:
+Handles background tasks, such as notifications and news summarization.
 
-Integration: Synchronous communication with the Comment model via FastAPI
+### RabbitMQ:
+Serves as the message broker for Celery workers.
 
-### Summarizing Model: sshleifer/distilbart-cnn-12-6
+### Redis:
+Used as a cache layer and Celery result backend to improve performance.
 
-In this service, we configured a lightweight summarization model — sshleifer/distilbart-cnn-12-6
+## Database Layer
 
-model url : https://huggingface.co/sshleifer/distilbart-cnn-12-6
+### PostgreSQL:
+Primary relational database for Django and FastAPI services.
 
-its a Lightweight,Faster inference,Lower resource usage and Hight accurate model
+### SQL Server:
+Used by the ASP.NET backend for storing shared news data.
 
-its used to summaried news text 
+## Containerization
 
-## Modular Django Apps
+All services are containerized with Docker and orchestrated using Docker Compose for easy deployment, scalability, and environment consistency.
+## other features
 
-The project is organized into multiple Django apps for better modularity and scalability:
-###  Page & News
+## Other Features
+### Logging with Loguru
+The project uses Loguru for advanced logging
 
-    Developed a system to create and manage pages.
+### Request Throttling
+The Django REST Framework is configured with throttling to prevent abuse
 
-    Implemented functionality to publish news articles under each page.
+### JWT Authentication
+Access tokens valid for 15 minutes, refresh tokens for 7 days.
 
-    Integrated a machine learning model to detect fake news.
+Supports token rotation and blacklist after rotation.
 
-    Designed a GraphQL endpoint to provide personalized "For You" news recommendations.
-
-    Implemented an advanced search feature on news articles, allowing users to query by keywords
-
-### Comment
-
-    Add and manage comments on news
-
-    Score comments using the hate speech detection service
-
-    self referenc relation as reply on Comment
-
-### Discussion & Topic
-
-    Start and participate in discussions
-
-    Organize conversations under various topics
-
-### Question & Answer
-
-    Ask and answer questions within discussions
-
-    Community-style interaction
-
-### Notification
-
-    Send real-time notifications (e.g., news likes)
-
-    Asynchronous task handling with Celery and RabbitMQ
-
-## Backend Implementation
-
-### Authentication:
-    Implemented JWT authentication with both access and refresh tokens for secure user sessions.
-### Celery: 
-    We use Celery to handle asynchronous tasks within the application. It is utilized in two key areas:
-    Sending notifications asynchronously to improve responsiveness.
-    Summarizing news text in the background, offloading heavy NLP tasks from the main API. 
-    
-### RabbitMQ: 
-    RabbitMQ is used as the message broker for Celery workers, enabling reliable task queuing
-    and communication between services.
-### redis:
-    Redis serves as a temporary in-memory data store, used to cache summarized news text after
-    it has been processed by the summarization model — improving response times and
-    reducing redundant computations.
-
-### GraphQL Integration:
-    Configured GraphQL to use the same authentication tokens as the rest of the system,
-    ensuring consistent and secure access control across all endpoints.
-    GraphQL is used to fetch personalized news recommendations for each user,
-    providing flexible and efficient data querying tailored to individual preferences.
-
-### Database Design:
-    Built with PostgreSQL, including a well-structured Entity Relationship Diagram (ERD) to define and
-    enforce complete model relationships.
-
-### Django ORM:
-    Utilized Django ORM to perform advanced queries and manage data efficiently.
-
-### Django REST Framework (DRF):
-    Fully integrated with DRF using views, services, and serializers for clean and modular 
-    API development.
-
-### Containerization:
-    All services are containerized with Docker and orchestrated using Docker Compose for 
-    easy deployment and scalability.
-### Signal
-    Configure a signal decorator to automatically create user information, user pages, and discussion 
-    threads whenever a new user is created. 
-### Logging
-    Use Loguru with an InterceptHandler to capture and redirect standard logs, while also defining
-    custom loggers for specialized application behaviors.
-
-## Docker Compose Services:
-### PostgreSQL (db)
-Image: postgres:15
-
-Acts as the primary relational database for the Django application and other services.
-
-Configured via an .env file for credentials and database settings.
-
-Includes a healthcheck to ensure the database is ready before dependent services start.
-
-Ports:5433:5432
-
-### Django (django):
-Framework: Django (Python)
-
-Serves as the main backend and API layer, handling business logic, authentication, and orchestration of other services.
-
-Automatically applies database migrations on startup.
-
-Loads configuration from environment variables and .env.
-
-Ports: 8000:8000
-
-### Celery (celery):
-Purpose: Asynchronous task queue worker.
-
-Executes long-running or background tasks such as:
-
-Sending notifications
-Summarizing news text
-
-Depends on PostgreSQL, RabbitMQ, Redis, and the Summarizer service.
-
-Waits a few seconds on startup to ensure all services are ready.
-
-### FastAPI Services
-#### Fake News Detection (fastapi):
-A FastAPI microservice for detecting fake news.
-
-Connects to the same PostgreSQL database as Django.
-
-Ports: 8001:8001
-
-#### Hate Speech Detection (hate_speech_api):
-Provides a dedicated API to detect and filter hate speech in content.
-
-Lightweight FastAPI service, independently deployable.
-
-Ports: 8002:8000
-
-#### Summarizer Service (summarizer)
-
-A FastAPI microservice for text summarization.
-
-Uses a lightweight transformer model (sshleifer/distilbart-cnn-12-6)
-
-Ports: 8003:8003
-
-### RabbitMQ (rabbitmq)
-Message broker for Celery task queue.
-
-Facilitates communication between Django and background workers.
-
-Includes a web-based management UI.
-
-Ports:
-
-5672 → message broker
-
-15672 → management dashboard
-
-### Redis (redis)
-
-In-memory key-value store used as:
-
-A Celery backend for task result storage.
-
-A cache layer for storing summarized news text temporarily, improving performance.
-
-Ports: 6379:6379
-
+Works with REST APIs (DRF Simple JWT) and GraphQL JWT integration.
 ## How to Use the API
 
 Follow these steps to get the API service up and running locally:
