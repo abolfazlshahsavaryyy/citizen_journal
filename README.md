@@ -81,14 +81,35 @@ Used by the ASP.NET backend for storing shared news data.
 ## Containerization
 
 All services are containerized with Docker and orchestrated using Docker Compose for easy deployment, scalability, and environment consistency.
-## other features
 
 ## Other Features
 ### Logging with Loguru
 The project uses Loguru for advanced logging
 
+using interceptor for auto logging
+
 ### Request Throttling
 The Django REST Framework is configured with throttling to prevent abuse
+in this project the strcuture for throttling is as follows:
+##### Global throttles:
+
+Anonymous users: 50/day
+
+Authenticated users: 2000/day
+
+##### Scoped throttles for specific actions:
+
+post_news: 5/minute
+
+read_news: 100/minute
+
+like_dislike_news: 3000/hour
+
+create_page: 2/hour
+
+create_topic: 10/minute
+
+ask_question / answer_question: 5/minute
 
 ### JWT Authentication
 Access tokens valid for 15 minutes, refresh tokens for 7 days.
