@@ -5,6 +5,7 @@ from Page.views.page_views import *
 from Page.views.follow_views import *
 from Page.views.news_views import *
 from Page.views.like_view import *
+from Page.views.share_view import *
 
 urlpatterns = [
     path('pages/', PageListCreateView.as_view(), name='page-list-create'),
@@ -24,5 +25,9 @@ urlpatterns = [
 
     path("news/<int:news_id>/summarize/", SummarizeNewsView.as_view(), name="summarize-news"),
     path("news/<int:news_id>/summary/", GetSummaryView.as_view(), name="get-summary"),
+
+    path("share-news/",  get_share_news_by_user),
+    path("share-news/add/", add_share_news),
+    path("share-news/remove/", remove_share_news),
 
 ]
