@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "ShareNewsGrpc.Protos";
+
+package share;
+
+message GetShareNewsByUserRequest {
+  int32 userId = 1;
+}
+
+message ShareNewsMessage {
+  int32 id = 1;
+  int32 userIdSender = 2;
+  int32 newsId = 3;
+  int32 userIdReceiver = 4;
+  string content = 5;
+  string createdAt = 6;
+}
+
+message GetShareNewsByUserResponse {
+  repeated ShareNewsMessage items = 1;
+}
+message AddShareNewsRequest {
+  int32 userIdSender = 1;
+  int32 newsId = 2;
+  int32 userIdReceiver = 3;
+  string content = 4;
+}
+
+message AddShareNewsResponse {
+  ShareNewsMessage item = 1;
+}
+message RemoveShareNewsRequest{
+  int32 shareNewsId = 1;
+}
+message RemoveShareNewsResponse{
+  int32 shareNewsId = 1;
+}
+
+service ShareNewsService {
+  rpc GetShareNewsByUser (GetShareNewsByUserRequest) returns (GetShareNewsByUserResponse);
+  rpc AddShareNews (AddShareNewsRequest) returns (AddShareNewsResponse);
+  rpc RemoveShareNews(RemoveShareNewsRequest) returns (RemoveShareNewsResponse);
+}
