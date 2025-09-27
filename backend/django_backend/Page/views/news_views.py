@@ -164,7 +164,7 @@ class PredictNewsView(APIView):
 
         try:
             # Send POST request to FastAPI endpoint
-            response = requests.post("http://localhost:8001/predict/logistic-regression", json=payload)
+            response = requests.post("http://fastapi:8001/predict/logistic-regression", json=payload)
             response.raise_for_status()
         except requests.exceptions.RequestException as e:
             return Response({'error': 'Prediction service failed', 'details': str(e)},
