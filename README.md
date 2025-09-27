@@ -4,11 +4,22 @@
 CitizenJournal is a modern, Twitter-inspired web API project that combines social interaction with powerful machine learning features.
 It is built using Django as the main backend framework and FastAPI for serving machine learning models. The application offers intelligent content moderation and social features such as pages, news, comments, discussions, Q&A, and notifications.
 
-## Table of Contents## Table of Contents
+
+## Table of Contents
 - [CitizenJournal](#citizenjournal)
 - [Description](#description)
   - [Django](#django)
+    - [Modular Django Apps](#modular-django-apps)
+      - [Page & News](#page--news)
+      - [Comment](#comment)
+      - [Discussion & Topic](#discussion--topic)
+      - [Question & Answer](#question--answer)
+      - [Notification](#notification)
   - [FastAPI](#fastapi)
+    - [Machine Learning Models](#machine-learning-models)
+      - [Fake News Detection Model](#fake-news-detection-model)
+      - [Hate Speech Detection Model](#hate-speech-detection-model)
+      - [Summarization Model](#summarization-model)
   - [ASP.NET Core](#aspnet-core)
   - [API Types](#api-types)
     - [REST API](#rest-api)
@@ -41,9 +52,72 @@ This project is a modular, multi-service backend platform for managing news, use
 
 ## Django:
 Main backend framework for user management, news, comments, discussions, and GraphQL-based personalized news recommendations.
+### Modular Django Apps
 
+#### Page & News
+Create and manage pages.
+
+Publish news articles under each page.
+
+Integrates Fake News Detection ML model.
+
+Provides a GraphQL endpoint for personalized "For You" news recommendations.
+
+Advanced search by keywords for news articles.
+
+#### Comment
+Add and manage comments on news.
+
+Scores comments using the Hate Speech Detection ML model.
+
+Supports self-referencing replies for threaded discussions.
+
+#### Discussion & Topic
+
+Start and participate in discussions.
+
+Organize conversations under multiple topics.
+
+#### Question & Answer
+
+Community-style Q&A system within discussions.
+
+Users can ask and answer questions interactively.
+
+#### Notification
+Sends real-time notifications (e.g., news likes, replies).
+
+Uses Celery + RabbitMQ for asynchronous task handling.
 ## FastAPI:
 Microservices for machine learning features like fake news detection, hate speech detection, and summarization.
+### Machine Learning Models
+#### Fake News Detection Model
+Type: Logistic Regression
+
+Accuracy: 99.25% on test data
+
+Integration: Synchronously communicates with the News model via FastAPI.
+
+Purpose: Detects and flags fake news articles before they are shown to users.
+
+### Hate Speech Detection Model
+Type: Convolutional Neural Network (CNN)
+
+Accuracy: 86% on test data
+
+Integration: Synchronously communicates with the Comment model via FastAPI.
+
+Purpose: Scores comments for hate speech, helping to maintain a safe and respectful environment.
+
+### Summarization Model
+Model: sshleifer/distilbart-cnn-12-6 (Hugging Face)
+
+Model URL: https://huggingface.co/sshleifer/distilbart-cnn-12-6
+Features: Lightweight, fast inference, low resource usage, high accuracy
+
+Integration: Summarizes news text asynchronously to reduce load on main APIs.
+
+Purpose: Provides short, digestible summaries of news articles for users.
 
 ## ASP.NET Core:
 Dedicated backend service exposing gRPC APIs for sharing news between users across different platforms. Django acts as a gRPC client to consume this service.
