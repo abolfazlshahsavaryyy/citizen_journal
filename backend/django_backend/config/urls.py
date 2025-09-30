@@ -3,7 +3,7 @@ from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView,TokenVerifyView, TokenBlacklistView
 from django.urls import path
 from Page.graphql.schema import schema
 from django.views.decorators.csrf import csrf_exempt
@@ -24,8 +24,10 @@ schema_view = get_schema_view(
 admin_url=[path('admin/', admin.site.urls)]
 
 authentication_url=[
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),# it used to verify wether the toekn is correct or not
+    path("api/token/blacklist/", TokenBlacklistView.as_view(), name="token_blacklist"),# it used to invalidate the refresh toekn
     ]
 
 app_url=[
