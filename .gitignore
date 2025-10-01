@@ -1066,5 +1066,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 backend/django_backend/jwtRS256.key
-.gitignore
 backend/django_backend/jwtRS256.key.pub
+backend/django_backend/config/jwtRS256.key
+backend/django_backend/config/jwtRS256.key.pub

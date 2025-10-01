@@ -64,6 +64,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'graphene_django'
 ]
@@ -251,15 +252,17 @@ from django.conf import settings
 from datetime import timedelta
 from datetime import timedelta
 SIMPLE_JWT = {
+    "ALGORITHM": "RS256",
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # access token valid for 15 min
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # refresh token valid for 7 days
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
-
-    'ALGORITHM': 'HS256',             # HMAC SHA-256
-    'SIGNING_KEY': settings.SECRET_KEY, # <- same key as GraphQL JWT
-    'VERIFYING_KEY': None,             # used for asymmetric algorithms
-
+    "SIGNING_KEY": open(
+        os.path.join(BASE_DIR, "jwtRS256.key"), "r"
+    ).read(),
+    "VERIFYING_KEY": open(
+        os.path.join(BASE_DIR, "jwtRS256.key.pub"), "r"
+    ).read(),
     'AUTH_HEADER_TYPES': ('Bearer',),  # header: "Authorization: Bearer <token>"
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
@@ -267,6 +270,8 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
     'JTI_CLAIM': 'jti',
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
 # settings.py
 from datetime import timedelta
