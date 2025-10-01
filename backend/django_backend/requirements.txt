@@ -18,3 +18,4 @@ django-graphql-jwt
 redis
 grpcio 
 grpcio-tools
+cryptography>=42.0.0
