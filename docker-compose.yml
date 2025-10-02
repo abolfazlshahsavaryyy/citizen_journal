@@ -219,6 +219,19 @@ services:
       - "8080:8080"
     networks:
       - mynetwork
+    
+
+  
+  sqlite:
+    image: nouchka/sqlite3:latest
+    container_name: sqlite_container
+    volumes:
+      - /home/abolfazl/Documents/CitizenJournal/citizen_journal/data:/root/db
+    stdin_open: true
+    tty: true
+
+    networks:
+      - mynetwork
 
 networks:
   mynetwork:
