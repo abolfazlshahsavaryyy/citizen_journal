@@ -1069,3 +1069,4 @@ backend/django_backend/jwtRS256.key
 backend/django_backend/jwtRS256.key.pub
 backend/django_backend/config/jwtRS256.key
 backend/django_backend/config/jwtRS256.key.pub
+data/savenews.db
