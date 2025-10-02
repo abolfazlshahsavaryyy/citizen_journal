@@ -19,7 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //configure the http route to Django app
 builder.Services.AddHttpClient("PublicKeyClient", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:8000/");
+    client.BaseAddress = new Uri("http://django:8000/");
 });
 //configure mediatR for CQRS
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SaveNewsCommandHandler).Assembly));
@@ -27,8 +27,27 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SaveN
 
 // Fetch the public key from Django
 using var httpClient = new HttpClient();
-var publicKeyText = await httpClient.GetStringAsync("http://localhost:8000/account/api/public-key/");
+string publicKeyText = null;
+var retries = 20;
 
+for (int i = 0; i < retries; i++)
+{
+    try
+    {
+        publicKeyText = await httpClient.GetStringAsync("http://django:8000/account/api/public-key/");
+        break; // success
+    }
+    catch (HttpRequestException)
+    {
+        Console.WriteLine("Django not ready yet, retrying in 3s...");
+        await Task.Delay(3000);
+    }
+}
+
+if (publicKeyText == null)
+{
+    throw new Exception("Failed to fetch public key from Django after multiple attempts.");
+}
 // Import into RSA
 using var rsa = RSA.Create();
 rsa.ImportFromPem(publicKeyText.ToCharArray());
