@@ -20,8 +20,9 @@ It is built using Django as the main backend framework and FastAPI for serving m
       - [Fake News Detection Model](#fake-news-detection-model)
       - [Hate Speech Detection Model](#hate-speech-detection-model)
       - [Summarization Model](#summarization-model)
-  - [ASP.NET Core](#aspnet-core)
-    - [Entity Framework](#entity-framework) 
+  - [ASP.NET Core Services](#aspnet-core-services)
+    - [Save News Service](#save-news-service)
+    - [Share News gRPC Service](#share-news-grpc-service)
   - [API Types](#api-types)
     - [REST API](#rest-api)
     - [GraphQL API](#graphql-api)
@@ -33,6 +34,7 @@ It is built using Django as the main backend framework and FastAPI for serving m
   - [Database Layer](#database-layer)
     - [PostgreSQL](#postgresql)
     - [SQL Server](#sql-server)
+    - [SQLite](#sqlite)
   - [Containerization](#containerization)
   - [Other Features](#other-features)
     - [Logging with Loguru](#logging-with-loguru)
@@ -45,7 +47,6 @@ It is built using Django as the main backend framework and FastAPI for serving m
     - [3. Start All Services](#3-start-all-services)
     - [4. Apply Database Migrations](#4-apply-database-migrations)
     - [5. Access the API](#5-access-the-api)
-
 
 
 # Description
@@ -119,11 +120,19 @@ Features: Lightweight, fast inference, low resource usage, high accuracy
 Integration: Summarizes news text asynchronously to reduce load on main APIs.
 
 Purpose: Provides short, digestible summaries of news articles for users.
+## ASP.NET Core Services
 
-## ASP.NET Core:
-Dedicated backend service exposing gRPC APIs for sharing news between users across different platforms. Django acts as a gRPC client to consume this service.
-### Entity Framework
-the ORM for integration with sql server database  
+### 1. Save News Service
+- Implements CQRS pattern using MediatR
+- Uses Carter for minimal API endpoints
+- Zero Trust authentication with public key and RSA256 for verification
+- SQLite as the database backend
+
+### 2. Share News gRPC Service
+- Provides gRPC APIs for sharing news across platforms
+- SQL Server as database backend
+- Entity Framework (EF Core) as ORM
+
 ## API Types:
 
 ### REST API
@@ -186,13 +195,13 @@ create_page: 2/hour
 create_topic: 10/minute
 
 ask_question / answer_question: 5/minute
-
 ### JWT Authentication
-Access tokens valid for 15 minutes, refresh tokens for 7 days.
+ - Access and refresh tokens generated using RSA256
+ - Access tokens valid for 15 minutes, refresh tokens for 7 days
+ - Blacklist system to prevent conflicts between refresh tokens
+ - Verification mechanism to ensure token validity
+ - Supports both REST APIs and GraphQL integration
 
-Supports token rotation and blacklist after rotation.
-
-Works with REST APIs (DRF Simple JWT) and GraphQL JWT integration.
 ## How to Use the API
 
 Follow these steps to get the API service up and running locally:
