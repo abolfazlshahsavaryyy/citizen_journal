@@ -1,0 +1,24 @@
+{% for comment in comments %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p>{{ comment.content }}</p>
+            <p><strong>User ID:</strong> {{ comment.user }}</p>
+
+            {% if comment.replies %}
+                <div class="ms-4 mt-2">
+                    {% for reply in comment.replies %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <p>{{ reply.content }}</p>
+                                <p><strong>User ID:</strong> {{ reply.user }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Button to view comment detail -->
+            <a href="{% url 'comment_detail' comment.id %}" class="btn btn-primary btn-sm mt-2">View Comment Details</a>
+        </div>
+    </div>
+{% endfor %}

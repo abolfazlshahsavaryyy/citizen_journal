@@ -251,6 +251,26 @@ services:
     networks:
       - mynetwork
 
+  frontend:
+    build:
+      context: ./frontend       # your frontend project folder
+      dockerfile: Dockerfile    # Dockerfile in frontend folder
+    env_file:
+      - ./frontend/.env         # optional, if you have env variables
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "7000:7000"             # container runs on 8001, exposed to host as 7000
+    depends_on:
+      - django                  # wait for main django service
+    networks:
+      - mynetwork
+    command: sh -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:7000"
+    restart: no
+
+
 
 networks:
   mynetwork:
